@@ -188,7 +188,13 @@ export default () => {
           {isAnimating ? "Stop" : "Start"} Animating
         </button>
       </div>
-      <Patterns patterns={singleLayerPatternSet} />
+      <Patterns
+        patterns={singleLayerPatternSet}
+        patternDefinitionsUsed={
+          solvedPattern?.patternDefinitionsUsed ??
+          bluePattern?.patternDefinitionsUsed
+        }
+      />
     </>
   )
 }

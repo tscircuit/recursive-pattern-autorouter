@@ -1,4 +1,8 @@
-import { singleLayerPatternSet, type PatternDefinition } from "lib/patterns"
+import {
+  getPatternName,
+  singleLayerPatternSet,
+  type PatternDefinition,
+} from "lib/patterns"
 import { projectPattern } from "lib/patterns/projectPattern"
 import type { PointWithLayer2 } from "lib/types/SimpleRouteJson"
 import { hasJSDocParameterTags } from "typescript"
@@ -17,6 +21,8 @@ export interface Segment {
 export interface ProjectedPattern {
   parentProjectedPattern: ProjectedPattern | null
   parentSegmentIndex: number
+
+  patternDefinitionsUsed: Record<string, number>
 
   solvedSegments: Segment[]
   unsolvedSegments: Segment[]
@@ -77,6 +83,12 @@ export class AstarPatternPathFinder {
           patternDefinition,
         )
 
+        const patternName = getPatternName(patternDefinition) ?? "unknown"
+
+        const patternDefinitionsUsed = { ...pat.patternDefinitionsUsed }
+        patternDefinitionsUsed[patternName] =
+          (patternDefinitionsUsed[patternName] || 0) + 1
+
         const solvedSegments = [...pat.solvedSegments]
         const unsolvedSegments = [...unsolvedSegmentsWithoutAnchorSegment]
 
@@ -109,6 +121,7 @@ export class AstarPatternPathFinder {
         const newPattern: ProjectedPattern = {
           parentProjectedPattern: pat,
           parentSegmentIndex,
+          patternDefinitionsUsed,
           solvedSegments,
           unsolvedSegments,
         }
