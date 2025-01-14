@@ -214,7 +214,7 @@ export const InteractiveAutorouter = ({
                     y1={start.y}
                     x2={end.x}
                     y2={end.y}
-                    stroke="#3B82F6"
+                    stroke={(trace as any).color ?? "#3B82F6"}
                     strokeWidth={segment.width * scale_factor}
                     strokeOpacity={0.5}
                   />

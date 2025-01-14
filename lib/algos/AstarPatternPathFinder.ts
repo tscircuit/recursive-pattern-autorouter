@@ -8,6 +8,7 @@ import type { ProcessedObstacle } from "./preprocessObstacles"
 export interface Segment {
   A: PointWithLayer2
   B: PointWithLayer2
+  depth: number
   hasCollision: boolean
 }
 
@@ -15,7 +16,8 @@ export interface ProjectedPattern {
   parentProjectedPattern: ProjectedPattern | null
   parentSegmentIndex: number
 
-  segments: Segment[]
+  solvedSegments: Segment[]
+  unsolvedSegments: Segment[]
 
   /**
    * Cost of the path considering all segments without collisions
@@ -33,9 +35,11 @@ export interface ProjectedPattern {
   f?: number
 }
 
-export class GeneralizedAstar {
+export class AstarPatternPathFinder {
   openSet: ProjectedPattern[] = []
-  iterations: number = -1
+  iterations: number = 0
+
+  exploredPatterns: ProjectedPattern[] = []
 
   patternDefinitions: PatternDefinition[] = singleLayerPatternSet
 
@@ -50,50 +54,65 @@ export class GeneralizedAstar {
    */
   getNewCandidatePatterns(pat: ProjectedPattern): ProjectedPattern[] {
     // Generate new candidate patterns
-
     const newPatterns: ProjectedPattern[] = []
 
     for (
       let parentSegmentIndex = 0;
-      parentSegmentIndex < pat.segments.length;
+      parentSegmentIndex < pat.unsolvedSegments.length;
       parentSegmentIndex++
     ) {
-      const segment = pat.segments[parentSegmentIndex]
-      if (segment.hasCollision) continue
+      const anchorSegment = pat.unsolvedSegments[parentSegmentIndex]
+      const unsolvedSegmentsWithoutAnchorSegment = [
+        ...pat.unsolvedSegments.slice(0, parentSegmentIndex),
+        ...pat.unsolvedSegments.slice(parentSegmentIndex + 1),
+      ]
       for (const patternDefinition of this.patternDefinitions) {
         const projectedPoints = projectPattern(
-          segment.A,
-          segment.B,
+          anchorSegment.A,
+          anchorSegment.B,
           patternDefinition,
         )
 
-        for (let i = 0; i < projectedPoints.length; i++) {
+        const solvedSegments = [...pat.solvedSegments]
+        const unsolvedSegments = [...unsolvedSegmentsWithoutAnchorSegment]
+
+        for (let i = 0; i < projectedPoints.length - 1; i++) {
           const newA = projectedPoints[i]
           const newB = projectedPoints[i + 1]
 
-          const newPattern: ProjectedPattern = {
-            parentProjectedPattern: pat,
-            parentSegmentIndex,
-            segments: [
-              {
-                A: newA,
-                B: newB,
-                hasCollision: doesIntersect(
-                  newA,
-                  newB,
-                  this.processedObstacles,
-                  this.obstacleMask,
-                ),
-              },
-            ],
+          const hasCollision = doesIntersect(
+            newA,
+            newB,
+            this.processedObstacles,
+            this.obstacleMask,
+          )
+
+          const newSegment: Segment = {
+            A: newA,
+            B: newB,
+            hasCollision,
+            depth: anchorSegment.depth + 1,
           }
 
-          newPattern.g = this.computeG(newPattern)
-          newPattern.h = this.computeH(newPattern)
-          newPattern.f = newPattern.g! + newPattern.h!
-
-          newPatterns.push(newPattern)
+          if (!hasCollision) {
+            solvedSegments.push(newSegment)
+          } else {
+            unsolvedSegments.push(newSegment)
+          }
         }
+
+        const newPattern: ProjectedPattern = {
+          parentProjectedPattern: pat,
+          parentSegmentIndex,
+          solvedSegments,
+          unsolvedSegments,
+        }
+
+        newPattern.g = this.computeG(newPattern)
+        newPattern.h = this.computeH(newPattern)
+        newPattern.f = newPattern.g! + newPattern.h!
+
+        newPatterns.push(newPattern)
       }
     }
 
@@ -107,7 +126,7 @@ export class GeneralizedAstar {
     const parentG = pat.parentProjectedPattern?.g ?? 0
 
     // Lots of opportunity to compute g differently!
-    return parentG + pat.segments.filter((s) => !s.hasCollision).length
+    return parentG + pat.solvedSegments.length
   }
 
   /**
@@ -115,7 +134,7 @@ export class GeneralizedAstar {
    */
   computeH(pat: ProjectedPattern) {
     // Equally as much opportunity!
-    return pat.segments.filter((s) => s.hasCollision).length
+    return pat.unsolvedSegments.length
   }
 
   solve() {
@@ -130,15 +149,15 @@ export class GeneralizedAstar {
   }
 
   solveOneStep() {
+    this.iterations++
     const current = this.openSet.shift()
     if (!current) return
+    this.exploredPatterns.push(current)
 
-    // ---------- VVVVVV PROBLEM VVVV  ------------
-    if (current.segments.every((s) => !s.hasCollision)) {
+    if (current.unsolvedSegments.length === 0) {
       this.solvedPattern = current
       return
     }
-    // ---------- ^^^^^^ PROBLEM ^^^^^^ -----------
 
     // There is at least one collision in our current pattern
 
@@ -146,8 +165,6 @@ export class GeneralizedAstar {
     for (const newCandidate of newCandidates) {
       this._binarySearchOpenSetInsert(newCandidate)
     }
-
-    this.iterations++
   }
 
   _binarySearchOpenSetInsert(neighborNode: ProjectedPattern) {
