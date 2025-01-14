@@ -5,7 +5,7 @@ the best low-complexity path.
 
 Read more in [this article](https://blog.autorouting.com/p/the-recursive-pattern-pathfinder)
 
-## Usage
+## Usage (Library)
 
 ```tsx
 import { RecursivePatternAutorouter } from "recursive-pattern-autorouter"
@@ -97,4 +97,20 @@ const simpleRouteJson = {
   layerCount: 2,
   minTraceWidth: 0.1,
 }
+```
+
+## Usage (CLI)
+
+You can start a [tscircuit-compatible autorouting server](https://github.com/tscircuit/autorouting/blob/main/AUTOROUTING_API.md)
+via the CLI or autoroute json files.
+
+```
+# Install
+npm install -g recursive-pattern-autorouter
+
+# Solve an autorouting problem from a JSON file
+recursive-pattern-autorouter run ./myproblem-routes.json --output ./solution-traces.json
+
+# Starts an autorouting server on 3120
+recursive-pattern-autorouter server start
 ```
