@@ -169,7 +169,15 @@ export const InteractiveSimpleRouteJson = ({
       xmlns="http://www.w3.org/2000/svg"
       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
     >
-      <text x={10} y={20} fontSize={12}>
+      <text
+        x={10}
+        y={20}
+        fontSize={12}
+        style={{
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      >
         Iterations: {iterations}
       </text>
       {/* Draw obstacles */}
