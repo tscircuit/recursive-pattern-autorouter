@@ -1,3 +1,23 @@
+export interface RouteWire {
+	route_type: "wire";
+	x: number;
+	y: number;
+	width: number;
+	layer: string;
+}
+
+export interface RouteVia {
+	route_type: "via";
+	from_layer: string;
+	to_layer: string;
+	x: number;
+	y: number;
+}
+
+export interface SimplifiedPcbTrace {
+	route: Array<RouteWire | RouteVia>;
+}
+
 export type Obstacle = {
 	type: "rect";
 	layers: string[];
@@ -31,4 +51,5 @@ export interface SimpleRouteJson {
 	obstacles: Obstacle[];
 	connections: Array<SimpleRouteConnection | ConnectionWithGoalAlternatives>;
 	bounds: { minX: number; maxX: number; minY: number; maxY: number };
+	traces?: SimplifiedPcbTrace[];
 }

@@ -18,7 +18,9 @@
     "dist"
   ],
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "bun-match-svg": "^0.0.8",
+    "circuit-to-svg": "^0.0.100"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
