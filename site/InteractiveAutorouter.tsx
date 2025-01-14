@@ -19,6 +19,7 @@ interface Props {
   doAutorouting?: (json: SimpleRouteJson, maxSteps: number) => IAutorouterResult
   svgOnly?: boolean
   defaultMaxSteps?: number
+  svgSize?: { width: number; height: number }
 }
 
 function getAllSegmentsFromSolvedPattern(
@@ -46,6 +47,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
   defaultMaxSteps = 100,
   doAutorouting,
   svgOnly,
+  svgSize,
 }) => {
   const [maxSteps, setMaxSteps] = useState(defaultMaxSteps)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -121,6 +123,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
   return (
     <>
       <InteractiveSimpleRouteJson
+        svgSize={svgSize}
         simpleRouteJson={{ ...simpleRouteJson, traces }}
         onChangeSimpleRouteJson={setSimpleRouteJson}
       />

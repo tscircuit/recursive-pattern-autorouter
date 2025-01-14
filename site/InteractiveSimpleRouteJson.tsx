@@ -5,11 +5,13 @@ import type { PointWithLayer, SimpleRouteJson } from "lib/types/SimpleRouteJson"
 interface Props {
   simpleRouteJson: SimpleRouteJson
   onChangeSimpleRouteJson?: (json: SimpleRouteJson) => void
+  svgSize?: { width: number; height: number }
 }
 
 export const InteractiveSimpleRouteJson = ({
   simpleRouteJson,
   onChangeSimpleRouteJson,
+  svgSize,
 }: Props) => {
   const svgRef = useRef<SVGSVGElement>(null)
   const [draggedPoint, setDraggedPoint] = useState<{
@@ -28,8 +30,8 @@ export const InteractiveSimpleRouteJson = ({
   const boundsHeight = simpleRouteJson.bounds.maxY - simpleRouteJson.bounds.minY
 
   // Target SVG dimensions
-  const svgWidth = 800
-  const svgHeight = 500
+  const svgWidth = svgSize?.width ?? 800
+  const svgHeight = svgSize?.height ?? 500
 
   // Calculate scale to fit bounds in SVG while maintaining aspect ratio
   const scale_factor = Math.min(

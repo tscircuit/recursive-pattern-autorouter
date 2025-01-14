@@ -55,6 +55,10 @@ test("jumpcounter1", () => {
             autorouter.solveOneStep()
           }
 
+          console.log(
+            autorouter.solvedPattern?.solvedSegments.map((s) => s.jumpsFromA),
+          )
+
           return autorouter
         }}
       />,
@@ -120,11 +124,13 @@ const simpleRouteJson: SimpleRouteJson = {
       name: "connectivity_net19",
       pointsToConnect: [
         {
-          x: 2.5,
+          // x: 2.5,
+          x: -2,
           y: 0,
           layer: "top",
         },
         {
+          // x: -3.5,
           x: -3.5,
           y: 0,
           layer: "top",

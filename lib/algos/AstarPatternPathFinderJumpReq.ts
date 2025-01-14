@@ -73,10 +73,6 @@ export class AstarPatternPathFinderJumpCount {
       parentSegmentIndex++
     ) {
       const anchorSegment = pat.unsolvedSegments[parentSegmentIndex]
-      const unsolvedSegmentsWithoutAnchorSegment = [
-        ...pat.unsolvedSegments.slice(0, parentSegmentIndex),
-        ...pat.unsolvedSegments.slice(parentSegmentIndex + 1),
-      ]
       for (const patternDefinition of this.patternDefinitions) {
         const projectedPoints = projectPattern(
           anchorSegment.A,
@@ -90,24 +86,8 @@ export class AstarPatternPathFinderJumpCount {
         patternDefinitionsUsed[patternName] =
           (patternDefinitionsUsed[patternName] || 0) + 1
 
-        const newJumpsAdded = projectedPoints.length - 1
-
-        const solvedSegments = [...pat.solvedSegments].map((seg) => ({
-          ...seg,
-          jumpsFromA:
-            seg.jumpsFromA < anchorSegment.jumpsFromA
-              ? seg.jumpsFromA
-              : seg.jumpsFromA + newJumpsAdded, // + newJumpsAdded,
-        }))
-        const unsolvedSegments = [...unsolvedSegmentsWithoutAnchorSegment].map(
-          (seg) => ({
-            ...seg,
-            jumpsFromA:
-              seg.jumpsFromA < anchorSegment.jumpsFromA
-                ? seg.jumpsFromA
-                : seg.jumpsFromA + newJumpsAdded,
-          }),
-        )
+        const newSolvedSegments: Segment[] = []
+        const newUnsolvedSegments: Segment[] = []
 
         for (let i = 0; i < projectedPoints.length - 1; i++) {
           const newA = projectedPoints[i]
@@ -132,11 +112,36 @@ export class AstarPatternPathFinderJumpCount {
           }
 
           if (!hasCollision) {
-            solvedSegments.push(newSegment)
+            newSolvedSegments.push(newSegment)
           } else {
-            unsolvedSegments.push(newSegment)
+            newUnsolvedSegments.push(newSegment)
           }
         }
+
+        const insertAtSolvedSegmentIndex = pat.solvedSegments.findIndex(
+          (s) => s.jumpsFromA > anchorSegment.jumpsFromA,
+        )
+
+        const segmentsAdded =
+          newSolvedSegments.length + newUnsolvedSegments.length
+
+        const solvedSegments = [
+          ...pat.solvedSegments.slice(0, insertAtSolvedSegmentIndex),
+          ...newSolvedSegments,
+          ...pat.solvedSegments.slice(insertAtSolvedSegmentIndex).map((s) => ({
+            ...s,
+            jumpsFromA: s.jumpsFromA + segmentsAdded - 1,
+          })),
+        ]
+
+        const unsolvedSegments = [
+          ...pat.unsolvedSegments.slice(0, parentSegmentIndex),
+          ...newUnsolvedSegments,
+          ...pat.unsolvedSegments.slice(parentSegmentIndex + 1).map((s) => ({
+            ...s,
+            jumpsFromA: s.jumpsFromA + segmentsAdded - 1,
+          })),
+        ]
 
         const newPattern: ProjectedPattern = {
           parentProjectedPattern: pat,
@@ -161,10 +166,20 @@ export class AstarPatternPathFinderJumpCount {
    * Cost of the path so far
    */
   computeG(pat: ProjectedPattern) {
-    return pat.solvedSegments.reduce(
+    const solvedDistance = pat.solvedSegments.reduce(
       (acc, segment) => acc + segment.distance,
       0,
     )
+
+    return solvedDistance
+
+    let solvedDirectJumpsFromADist = 0
+    for (let i = 0; i < pat.solvedSegments.length; i++) {
+      if (pat.solvedSegments[i].jumpsFromA !== i) break
+      solvedDirectJumpsFromADist += pat.solvedSegments[i].distance
+    }
+
+    return solvedDistance * 0.9 + solvedDirectJumpsFromADist * 0.1
   }
 
   /**
