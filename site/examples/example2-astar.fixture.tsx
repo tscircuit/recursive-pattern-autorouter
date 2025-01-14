@@ -57,6 +57,7 @@ export default () => {
           A: { ...simpleRouteJson.connections[0]!.pointsToConnect[0]!, l: 0 },
           B: { ...simpleRouteJson.connections[0]!.pointsToConnect[1]!, l: 0 },
           hasCollision: true,
+          jumpsFromA: 0,
           depth: 0,
           distance: distance(
             simpleRouteJson.connections[0]!.pointsToConnect[0]!,
@@ -65,7 +66,7 @@ export default () => {
         },
       ],
       solvedSegments: [],
-
+      patternDefinitionsUsed: {},
       g: 0,
       h: 0,
       f: 0,
@@ -83,6 +84,8 @@ export default () => {
       autorouter,
     }
   }, [maxSteps, simpleRouteJson])
+
+  console.log(solvedPattern?.solvedSegments.map((s) => s.jumpsFromA))
 
   useEffect(() => {
     if (isAnimating) {
@@ -136,11 +139,6 @@ export default () => {
       ),
     )
   }
-
-  console.log({
-    solvedPattern,
-    traces,
-  })
 
   return (
     <>
