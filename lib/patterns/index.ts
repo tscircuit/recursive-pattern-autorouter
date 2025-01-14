@@ -69,9 +69,9 @@ export const singleLayerPatternSet: PatternDefinition[] = [
   wideArrow,
   flippedWideArrow,
 
-  doubleBend,
-  flippedDoubleBend,
+  // doubleBend,
+  // flippedDoubleBend,
 
-  hardLeft,
-  flippedHardLeft,
+  // hardLeft,
+  // flippedHardLeft,
 ]

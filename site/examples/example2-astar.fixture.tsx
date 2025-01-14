@@ -3,6 +3,7 @@ import { distance } from "lib/algos/distance"
 import { processObstacles } from "lib/algos/preprocessObstacles"
 import type { SimpleRouteJson } from "lib/types/SimpleRouteJson"
 import { useState } from "react"
+import { InteractiveAutorouter } from "site/InteractiveAutorouter"
 import { InteractiveSimpleRouteJson } from "site/InteractiveSimpleRouteJson"
 
 const doAutorouting = (simpleRouteJson: SimpleRouteJson, maxSteps: number) => {
@@ -51,9 +52,9 @@ export default () => {
   const [simpleRouteJson, setSimpleRouteJson] = useState(initialSimpleRouteJson)
 
   return (
-    <InteractiveSimpleRouteJson
-      simpleRouteJson={simpleRouteJson}
-      onChangeSimpleRouteJson={setSimpleRouteJson}
+    <InteractiveAutorouter
+      defaultSimpleRouteJson={simpleRouteJson}
+      doAutorouting={doAutorouting}
     />
   )
 }
