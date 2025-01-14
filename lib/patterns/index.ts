@@ -12,8 +12,8 @@ export const wideArrow = [
 
 export const doubleBend = [
   { x: 0, y: 0, l: 0 },
-  { x: 1 / 3, y: 1 / 3, l: 0 },
-  { x: 2 / 3, y: 1 / 3, l: 0 },
+  { x: 1 / 4, y: 1 / 3, l: 0 },
+  { x: 3 / 4, y: 1 / 3, l: 0 },
   { x: 1, y: 0, l: 0 },
 ]
 

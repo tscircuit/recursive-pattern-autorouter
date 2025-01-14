@@ -23,7 +23,6 @@ export const solveForLineRecursive = (
   const unitVec = { x: (B.x - A.x) / dist, y: (B.y - A.y) / dist }
   const orthoVec = { x: -unitVec.y, y: unitVec.x }
 
-  // Try other patterns
   for (const pattern of ctx.patterns) {
     const segmentPoints = pattern.map((pat) => ({
       x: A.x + (pat.x * unitVec.x + pat.y * orthoVec.x) * dist,
