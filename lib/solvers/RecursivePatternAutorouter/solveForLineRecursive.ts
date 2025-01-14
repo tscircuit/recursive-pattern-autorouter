@@ -1,6 +1,6 @@
 import type { PointWithLayer, PointWithLayer2 } from "lib/types/SimpleRouteJson"
 import type { ProcessedObstacle } from "lib/algos/preprocessObstacles"
-import type { Pattern } from "lib/patterns"
+import type { PatternDefinition } from "lib/patterns"
 import type { Trace } from "lib/types/SimpleRouteJson"
 import { doesIntersect } from "lib/algos/doesIntersect"
 
@@ -12,7 +12,7 @@ export const solveForLineRecursive = (
   ctx: {
     processedObstacles: ProcessedObstacle[]
     obstacleMask: boolean[]
-    patterns: Pattern[]
+    patterns: PatternDefinition[]
   },
 ): Line | null => {
   if (!doesIntersect(A, B, ctx.processedObstacles, ctx.obstacleMask)) {

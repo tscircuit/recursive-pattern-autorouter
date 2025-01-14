@@ -1,6 +1,6 @@
 import { doesIntersect } from "lib/algos/doesIntersect"
 import type { ProcessedObstacle } from "lib/algos/preprocessObstacles"
-import type { Pattern } from "lib/patterns"
+import type { PatternDefinition } from "lib/patterns"
 import type { PointWithLayer, Trace } from "lib/types/SimpleRouteJson"
 import { solveForLineRecursive } from "./solveForLineRecursive"
 
@@ -9,7 +9,7 @@ export const solveForTrace = (params: {
   endPoint: PointWithLayer
   processedObstacles: ProcessedObstacle[]
   existingTraces: Trace[]
-  patterns: Pattern[]
+  patterns: PatternDefinition[]
   connectionName: string
 }): Trace | null => {
   const start = { ...params.startPoint, l: 0 }

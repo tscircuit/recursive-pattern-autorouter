@@ -17,13 +17,13 @@ export const doubleBend = [
   { x: 1, y: 0, l: 0 },
 ]
 
-export type Pattern = Array<{ x: number; y: number; l: number }>
+export type PatternDefinition = Array<{ x: number; y: number; l: number }>
 
 const flip = (pattern: Array<{ x: number; y: number; l: number }>) => {
   return pattern.map((point) => ({ ...point, x: point.x, y: -point.y }))
 }
 
-export const singleLayerPatternSet: Pattern[] = [
+export const singleLayerPatternSet: PatternDefinition[] = [
   // we omit the straight line pattern, it has some special handling
   // straightLinePattern,
   wideArrow,
