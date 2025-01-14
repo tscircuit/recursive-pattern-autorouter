@@ -153,7 +153,7 @@ const PathFinder = () => {
 
   // Find path using pattern-checking A*
   const findPath = (start, end, depth = 0) => {
-    if (depth >= 5) return [start, end] // Max recursion depth
+    if (depth >= 6) return [start, end] // Max recursion depth
 
     // Check if direct path is clear
     const hasCollision = obstacles.some((obstacle) =>
