@@ -5,6 +5,7 @@ import {
 } from "lib/algos/AstarPatternPathFinder"
 import { distance } from "lib/algos/distance"
 import { processObstacles } from "lib/algos/preprocessObstacles"
+import { singleLayerPatternSet } from "lib/patterns"
 import { RecursivePatternAutorouter } from "lib/solvers/RecursivePatternAutorouter/RecursivePatternAutorouter"
 import type {
   RouteWire,
@@ -13,6 +14,7 @@ import type {
 } from "lib/types/SimpleRouteJson"
 import { useEffect, useMemo, useState } from "react"
 import { InteractiveAutorouter } from "site/InteractiveAutorouter"
+import Patterns from "site/Patterns"
 
 function getAllSegmentsFromSolvedPattern(
   solvedPattern: ProjectedPattern,
@@ -37,7 +39,7 @@ function convertSegmentsToTraces(segments: Segment[], color?: string): Trace[] {
 export default () => {
   const [simpleRouteJson, setSimpleRouteJson] = useState(initialSimpleRouteJson)
   const [maxSteps, setMaxSteps] = useState(100)
-  const [isAnimating, setIsAnimating] = useState(true)
+  const [isAnimating, setIsAnimating] = useState(false)
   const [frame, setFrame] = useState(0)
 
   const { exploredPatterns, solvedPattern, autorouter } = useMemo(() => {
@@ -186,6 +188,7 @@ export default () => {
           {isAnimating ? "Stop" : "Start"} Animating
         </button>
       </div>
+      <Patterns patterns={singleLayerPatternSet} />
     </>
   )
 }
