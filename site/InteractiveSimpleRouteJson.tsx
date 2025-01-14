@@ -6,12 +6,14 @@ interface Props {
   simpleRouteJson: SimpleRouteJson
   onChangeSimpleRouteJson?: (json: SimpleRouteJson) => void
   svgSize?: { width: number; height: number }
+  iterations?: number
 }
 
 export const InteractiveSimpleRouteJson = ({
   simpleRouteJson,
   onChangeSimpleRouteJson,
   svgSize,
+  iterations,
 }: Props) => {
   const svgRef = useRef<SVGSVGElement>(null)
   const [draggedPoint, setDraggedPoint] = useState<{
@@ -167,6 +169,9 @@ export const InteractiveSimpleRouteJson = ({
       xmlns="http://www.w3.org/2000/svg"
       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
     >
+      <text x={10} y={20} fontSize={12}>
+        Iterations: {iterations}
+      </text>
       {/* Draw obstacles */}
       {simpleRouteJson.obstacles.map((obstacle, i) => {
         if (obstacle.type === "rect") {

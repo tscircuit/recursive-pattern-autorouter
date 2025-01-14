@@ -59,6 +59,7 @@ export default () => {
           key={index}
           svgOnly
           svgSize={{ width: 400, height: 300 }}
+          defaultMaxSteps={300}
           defaultSimpleRouteJson={{
             ...simpleRouteJson,
             connections: [

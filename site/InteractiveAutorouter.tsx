@@ -124,6 +124,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
     <>
       <InteractiveSimpleRouteJson
         svgSize={svgSize}
+        iterations={autorouterResult?.iterations}
         simpleRouteJson={{ ...simpleRouteJson, traces }}
         onChangeSimpleRouteJson={setSimpleRouteJson}
       />
