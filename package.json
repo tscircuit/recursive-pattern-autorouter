@@ -4,7 +4,9 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "build": "tsup lib/index.ts lib/server/index.ts ./cli/cli.ts --format esm --dts"
+    "build": "tsup lib/index.ts lib/server/index.ts ./cli/cli.ts --format esm --dts",
+    "format": "biome format --write .",
+    "format:check": "biome format ."
   },
   "exports": {
     ".": "./dist/lib/index.js",
