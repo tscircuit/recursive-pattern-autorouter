@@ -18,7 +18,6 @@ export const solveForLineRecursive = (
   if (!doesIntersect(A, B, ctx.processedObstacles, ctx.obstacleMask)) {
     return [A, B]
   }
-  console.log("Intersects")
 
   const dist = Math.sqrt((B.x - A.x) ** 2 + (B.y - A.y) ** 2)
   const unitVec = { x: (B.x - A.x) / dist, y: (B.y - A.y) / dist }
@@ -26,19 +25,24 @@ export const solveForLineRecursive = (
 
   // Try other patterns
   for (const pattern of ctx.patterns) {
-    const segments = pattern.map((pat) => ({
+    const segmentPoints = pattern.map((pat) => ({
       x: A.x + (pat.x * unitVec.x + pat.y * orthoVec.x) * dist,
       y: A.y + (pat.x * unitVec.y + pat.y * orthoVec.y) * dist,
       l: 0,
     }))
 
+    const segments = segmentPoints.slice(0, -1).map((seg, i) => ({
+      start: seg,
+      end: segmentPoints[i + 1],
+    }))
+
     if (
       segments.every(
-        (seg) =>
-          !doesIntersect(A, seg, ctx.processedObstacles, ctx.obstacleMask),
+        ({ start, end }) =>
+          !doesIntersect(start, end, ctx.processedObstacles, ctx.obstacleMask),
       )
     ) {
-      return [A, ...segments]
+      return segmentPoints
     }
   }
 

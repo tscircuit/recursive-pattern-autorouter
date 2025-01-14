@@ -19,11 +19,6 @@ export const doesIntersect = (
   const dx = B.x - A.x
   const dy = B.y - A.y
 
-  // Normalized direction vector
-  const len = Math.sqrt(dx * dx + dy * dy)
-  const dirX = dx / len
-  const dirY = dy / len
-
   for (let i = 0; i < obstacles.length; i++) {
     if (!mask[i]) continue
 
@@ -44,27 +39,49 @@ export const doesIntersect = (
       continue
     }
 
-    // Check intersection using closest point on line segment approach
-    const t = Math.max(
-      0,
-      Math.min(
-        1,
-        ((obs.center.x - A.x) * dx + (obs.center.y - A.y) * dy) /
-          (dx * dx + dy * dy),
-      ),
-    )
+    // Check intersection using Separating Axis Theorem (SAT)
 
-    const closestX = A.x + t * dx
-    const closestY = A.y + t * dy
+    // Get the line segment vector and normalize it
+    const segmentLength = Math.sqrt(dx * dx + dy * dy)
+    const normalizedDx = dx / segmentLength
+    const normalizedDy = dy / segmentLength
 
-    // Find distance from closest point to rectangle center
-    const distX = Math.abs(closestX - obs.center.x)
-    const distY = Math.abs(closestY - obs.center.y)
+    // Calculate perpendicular vector to line segment
+    const perpDx = -normalizedDy
+    const perpDy = normalizedDx
 
-    // Check if closest point is within rectangle bounds
-    if (distX <= obs.halfWidth && distY <= obs.halfHeight) {
-      return true
+    // Project rectangle corners onto perpendicular axis
+    const rectHalfWidth = obs.halfWidth
+    const rectHalfHeight = obs.halfHeight
+    const rectProjection =
+      Math.abs(rectHalfWidth * perpDx) + Math.abs(rectHalfHeight * perpDy)
+
+    // Project vector from line start to rectangle center onto perpendicular axis
+    const centerVecX = obs.center.x - A.x
+    const centerVecY = obs.center.y - A.y
+    const centerProjection = Math.abs(centerVecX * perpDx + centerVecY * perpDy)
+
+    // If projections don't overlap, there's no intersection
+    if (centerProjection > rectProjection) {
+      continue
     }
+
+    // Project rectangle onto line segment axis
+    const rectProjectionOnLine =
+      Math.abs(rectHalfWidth * normalizedDx) +
+      Math.abs(rectHalfHeight * normalizedDy)
+    const centerProjectionOnLine =
+      centerVecX * normalizedDx + centerVecY * normalizedDy
+
+    // Check if line segment overlaps with rectangle projection
+    if (
+      centerProjectionOnLine + rectProjectionOnLine < 0 ||
+      centerProjectionOnLine - rectProjectionOnLine > segmentLength
+    ) {
+      continue
+    }
+
+    return true
   }
 
   return false

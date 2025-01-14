@@ -7,7 +7,6 @@ export default () => {
   const [simpleRouteJson, setSimpleRouteJson] = useState(initialSimpleRouteJson)
   const autorouter = new RecursivePatternAutorouter(simpleRouteJson)
   const traces = autorouter.solveForTraces()
-  console.log(traces)
   return (
     <InteractiveAutorouter
       simpleRouteJson={{ ...simpleRouteJson, traces }}

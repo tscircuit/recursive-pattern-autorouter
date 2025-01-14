@@ -24,7 +24,8 @@ const flip = (pattern: Array<{ x: number; y: number; l: number }>) => {
 }
 
 export const singleLayerPatternSet: Pattern[] = [
-  straightLinePattern,
+  // we omit the straight line pattern, it has some special handling
+  // straightLinePattern,
   wideArrow,
   flip(wideArrow),
   doubleBend,
