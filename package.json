@@ -4,7 +4,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "start": "vite",
+    "start": "cosmos",
     "build": "tsup lib/index.ts lib/server/index.ts ./cli/cli.ts --format esm --dts",
     "format": "biome format --write .",
     "format:check": "biome format ."
@@ -33,6 +33,7 @@
     "react-cosmos": "^6.2.3",
     "react-cosmos-plugin-vite": "^6.2.0",
     "react-dom": "^19.0.0",
+    "transformation-matrix": "^2.16.1",
     "vite": "^6.0.7",
     "vite-tsconfig-paths": "^5.1.4"
   },
