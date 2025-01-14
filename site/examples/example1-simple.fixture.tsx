@@ -9,7 +9,7 @@ export default () => {
   const traces = autorouter.solveForTraces()
   return (
     <InteractiveAutorouter
-      simpleRouteJson={{ ...simpleRouteJson, traces }}
+      defaultSimpleRouteJson={{ ...simpleRouteJson, traces }}
       onChangeSimpleRouteJson={(json) => {
         setSimpleRouteJson(json)
       }}

@@ -44,7 +44,7 @@ export interface ProjectedPattern {
   f?: number
 }
 
-export class AstarPatternPathFinder {
+export class AstarPatternPathFinderJumpCount {
   openSet: ProjectedPattern[] = []
   iterations: number = 0
 

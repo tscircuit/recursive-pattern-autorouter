@@ -7,7 +7,7 @@ interface Props {
   onChangeSimpleRouteJson?: (json: SimpleRouteJson) => void
 }
 
-export const InteractiveAutorouter = ({
+export const InteractiveSimpleRouteJson = ({
   simpleRouteJson,
   onChangeSimpleRouteJson,
 }: Props) => {
