@@ -18,6 +18,7 @@ export const solveForLineRecursive = (
   if (!doesIntersect(A, B, ctx.processedObstacles, ctx.obstacleMask)) {
     return [A, B]
   }
+  console.log("Intersects")
 
   const dist = Math.sqrt((B.x - A.x) ** 2 + (B.y - A.y) ** 2)
   const unitVec = { x: (B.x - A.x) / dist, y: (B.y - A.y) / dist }

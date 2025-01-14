@@ -70,18 +70,20 @@ export const InteractiveAutorouter = ({
 
     // Check if clicking near any connection points
     const clickRadius = 10
-    simpleRouteJson.connections.forEach((connection, connectionIndex) => {
-      connection.pointsToConnect.forEach((point, pointIndex) => {
+    for (let i = 0; i < simpleRouteJson.connections.length; i++) {
+      const connection = simpleRouteJson.connections[i]
+      for (let j = 0; j < connection.pointsToConnect.length; j++) {
+        const point = connection.pointsToConnect[j]
         const transformedPoint = transformPoint(point)
         if (
           Math.hypot(x - transformedPoint.x, y - transformedPoint.y) <
           clickRadius
         ) {
-          setDraggedPoint({ connectionIndex, pointIndex })
+          setDraggedPoint({ connectionIndex: i, pointIndex: j })
           return
         }
-      })
-    })
+      }
+    }
 
     // If not dragging a point, start drawing obstacle
     if (!draggedPoint) {
@@ -176,29 +178,64 @@ export const InteractiveAutorouter = ({
               y={topLeft.y}
               width={obstacle.width * scale_factor}
               height={obstacle.height * scale_factor}
-              fill={obstacle.connectedTo.some(id => 
-                simpleRouteJson.connections.some(conn => 
-                  conn.name === id && 
-                  conn.pointsToConnect.some(point => 
-                    Math.abs(point.x - obstacle.center.x) < obstacle.width/2 &&
-                    Math.abs(point.y - obstacle.center.y) < obstacle.height/2
-                  )
+              fill={
+                obstacle.connectedTo.some((id) =>
+                  simpleRouteJson.connections.some((conn) => conn.name === id),
                 )
-              ) ? "#86efac" : "#fca5a5"}
-              stroke={obstacle.connectedTo.some(id =>
-                simpleRouteJson.connections.some(conn => 
-                  conn.name === id && 
-                  conn.pointsToConnect.some(point =>
-                    Math.abs(point.x - obstacle.center.x) < obstacle.width/2 &&
-                    Math.abs(point.y - obstacle.center.y) < obstacle.height/2
-                  )
+                  ? "#86efac"
+                  : "#fca5a5"
+              }
+              stroke={
+                obstacle.connectedTo.some((id) =>
+                  simpleRouteJson.connections.some((conn) => conn.name === id),
                 )
-              ) ? "#22c55e" : "#dc2626"}
+                  ? "#22c55e"
+                  : "#dc2626"
+              }
             />
           )
         }
         return null
       })}
+
+      {/* Draw traces */}
+      {simpleRouteJson.traces?.map((trace, i) => (
+        <g key={i}>
+          {trace.route.map((segment, j) => {
+            if (segment.route_type === "wire") {
+              const start = transformPoint({ x: segment.x, y: segment.y })
+              const next = trace.route[j + 1]
+              if (next && next.route_type === "wire") {
+                const end = transformPoint({ x: next.x, y: next.y })
+                return (
+                  <line
+                    key={j}
+                    x1={start.x}
+                    y1={start.y}
+                    x2={end.x}
+                    y2={end.y}
+                    stroke="#3B82F6"
+                    strokeWidth={segment.width * scale_factor}
+                    strokeOpacity={0.5}
+                  />
+                )
+              }
+            } else if (segment.route_type === "via") {
+              const pos = transformPoint({ x: segment.x, y: segment.y })
+              return (
+                <circle
+                  key={j}
+                  cx={pos.x}
+                  cy={pos.y}
+                  r={simpleRouteJson.minTraceWidth * scale_factor}
+                  fill="#9333EA"
+                />
+              )
+            }
+            return null
+          })}
+        </g>
+      ))}
 
       {/* Draw connections */}
       {simpleRouteJson.connections.map((connection, i) => (
@@ -222,7 +259,8 @@ export const InteractiveAutorouter = ({
               x2={transformPoint(connection.pointsToConnect[1]).x}
               y2={transformPoint(connection.pointsToConnect[1]).y}
               stroke="#3B82F6"
-              strokeWidth="2"
+              opacity={0.5}
+              strokeWidth="3"
               strokeDasharray="4"
             />
           )}

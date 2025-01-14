@@ -1,11 +1,24 @@
+import { RecursivePatternAutorouter } from "lib/solvers/RecursivePatternAutorouter/RecursivePatternAutorouter"
 import type { SimpleRouteJson } from "lib/types/SimpleRouteJson"
+import { useState } from "react"
 import { InteractiveAutorouter } from "site/InteractiveAutorouter"
 
 export default () => {
-  return <InteractiveAutorouter simpleRouteJson={simpleRouteJson} />
+  const [simpleRouteJson, setSimpleRouteJson] = useState(initialSimpleRouteJson)
+  const autorouter = new RecursivePatternAutorouter(simpleRouteJson)
+  const traces = autorouter.solveForTraces()
+  console.log(traces)
+  return (
+    <InteractiveAutorouter
+      simpleRouteJson={{ ...simpleRouteJson, traces }}
+      onChangeSimpleRouteJson={(json) => {
+        setSimpleRouteJson(json)
+      }}
+    />
+  )
 }
 
-const simpleRouteJson: SimpleRouteJson = {
+export const initialSimpleRouteJson: SimpleRouteJson = {
   bounds: {
     minX: -4.8,
     maxX: 4.8,
@@ -64,12 +77,12 @@ const simpleRouteJson: SimpleRouteJson = {
       pointsToConnect: [
         {
           x: 2.5,
-          y: 0,
+          y: 3,
           layer: "top",
         },
         {
           x: -3.5,
-          y: 0,
+          y: 3,
           layer: "top",
         },
       ],

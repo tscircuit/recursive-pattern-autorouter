@@ -44,20 +44,27 @@ export const doesIntersect = (
       continue
     }
 
-    // More precise test using separating axis theorem
-    const centerToStartX = A.x - obs.center.x
-    const centerToStartY = A.y - obs.center.y
+    // Check intersection using closest point on line segment approach
+    const t = Math.max(
+      0,
+      Math.min(
+        1,
+        ((obs.center.x - A.x) * dx + (obs.center.y - A.y) * dy) /
+          (dx * dx + dy * dy),
+      ),
+    )
 
-    const projRadius =
-      obs.halfWidth * Math.abs(dirY) + obs.halfHeight * Math.abs(dirX)
+    const closestX = A.x + t * dx
+    const closestY = A.y + t * dy
 
-    const proj = centerToStartX * dirX + centerToStartY * dirY
+    // Find distance from closest point to rectangle center
+    const distX = Math.abs(closestX - obs.center.x)
+    const distY = Math.abs(closestY - obs.center.y)
 
-    if (Math.abs(proj) > projRadius + len) {
-      continue
+    // Check if closest point is within rectangle bounds
+    if (distX <= obs.halfWidth && distY <= obs.halfHeight) {
+      return true
     }
-
-    return true
   }
 
   return false

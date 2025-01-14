@@ -18,7 +18,7 @@ export const solveForTrace = (params: {
   const line = solveForLineRecursive(start, end, {
     processedObstacles: params.processedObstacles,
     obstacleMask: params.processedObstacles.map((obstacle) => {
-      return obstacle.connectedTo.includes(params.connectionName)
+      return !obstacle.connectedTo.includes(params.connectionName)
     }),
     patterns: params.patterns,
   })
