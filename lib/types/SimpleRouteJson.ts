@@ -14,7 +14,7 @@ export interface RouteVia {
   y: number
 }
 
-export interface SimplifiedPcbTrace {
+export interface Trace {
   route: Array<RouteWire | RouteVia>
 }
 
@@ -25,6 +25,12 @@ export type Obstacle = {
   width: number
   height: number
   connectedTo: string[]
+}
+
+export interface PointWithLayer2 {
+  x: number
+  y: number
+  l: number
 }
 
 export interface PointWithLayer {
@@ -51,5 +57,5 @@ export interface SimpleRouteJson {
   obstacles: Obstacle[]
   connections: Array<SimpleRouteConnection | ConnectionWithGoalAlternatives>
   bounds: { minX: number; maxX: number; minY: number; maxY: number }
-  traces?: SimplifiedPcbTrace[]
+  traces?: Trace[]
 }

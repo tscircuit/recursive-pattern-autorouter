@@ -176,8 +176,24 @@ export const InteractiveAutorouter = ({
               y={topLeft.y}
               width={obstacle.width * scale_factor}
               height={obstacle.height * scale_factor}
-              fill="#CBD5E1"
-              stroke="#64748B"
+              fill={obstacle.connectedTo.some(id => 
+                simpleRouteJson.connections.some(conn => 
+                  conn.name === id && 
+                  conn.pointsToConnect.some(point => 
+                    Math.abs(point.x - obstacle.center.x) < obstacle.width/2 &&
+                    Math.abs(point.y - obstacle.center.y) < obstacle.height/2
+                  )
+                )
+              ) ? "#86efac" : "#fca5a5"}
+              stroke={obstacle.connectedTo.some(id =>
+                simpleRouteJson.connections.some(conn => 
+                  conn.name === id && 
+                  conn.pointsToConnect.some(point =>
+                    Math.abs(point.x - obstacle.center.x) < obstacle.width/2 &&
+                    Math.abs(point.y - obstacle.center.y) < obstacle.height/2
+                  )
+                )
+              ) ? "#22c55e" : "#dc2626"}
             />
           )
         }
