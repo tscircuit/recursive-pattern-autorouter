@@ -1,7 +1,22 @@
 {
   "name": "recursive-pattern-autorouter",
-  "module": "index.ts",
+  "main": "dist/lib/index.js",
   "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsup lib/index.ts lib/server/index.ts ./cli/cli.ts --format esm --dts"
+  },
+  "exports": {
+    ".": "./dist/lib/index.js",
+    "./cli": "./dist/cli/cli.js",
+    "./server": "./dist/server/index.js"
+  },
+  "bin": {
+    "recursive-pattern-autorouter": "./dist/cli/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@types/bun": "latest"
   },
