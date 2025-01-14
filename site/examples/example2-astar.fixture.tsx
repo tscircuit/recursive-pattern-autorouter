@@ -2,7 +2,8 @@ import {
   AstarPatternPathFinder,
   type ProjectedPattern,
   type Segment,
-} from "lib/algos/GeneralizedAstar2"
+} from "lib/algos/AstarPatternPathFinder"
+import { distance } from "lib/algos/distance"
 import { processObstacles } from "lib/algos/preprocessObstacles"
 import { RecursivePatternAutorouter } from "lib/solvers/RecursivePatternAutorouter/RecursivePatternAutorouter"
 import type {
@@ -35,18 +36,9 @@ function convertSegmentsToTraces(segments: Segment[], color?: string): Trace[] {
 
 export default () => {
   const [simpleRouteJson, setSimpleRouteJson] = useState(initialSimpleRouteJson)
-  const [maxSteps, setMaxSteps] = useState(1)
+  const [maxSteps, setMaxSteps] = useState(100)
   const [isAnimating, setIsAnimating] = useState(true)
   const [frame, setFrame] = useState(0)
-
-  useEffect(() => {
-    if (isAnimating) {
-      const interval = setInterval(() => {
-        setFrame((f) => f + 1)
-      }, 100)
-      return () => clearInterval(interval)
-    }
-  }, [isAnimating])
 
   const { exploredPatterns, solvedPattern, autorouter } = useMemo(() => {
     const autorouter = new AstarPatternPathFinder()
@@ -64,6 +56,10 @@ export default () => {
           B: { ...simpleRouteJson.connections[0]!.pointsToConnect[1]!, l: 0 },
           hasCollision: true,
           depth: 0,
+          distance: distance(
+            simpleRouteJson.connections[0]!.pointsToConnect[0]!,
+            simpleRouteJson.connections[0]!.pointsToConnect[1]!,
+          ),
         },
       ],
       solvedSegments: [],
@@ -86,16 +82,41 @@ export default () => {
     }
   }, [maxSteps, simpleRouteJson])
 
+  useEffect(() => {
+    if (isAnimating) {
+      const interval = setInterval(() => {
+        setFrame((f) => f + 1)
+      }, 1000 / autorouter.iterations)
+      return () => clearInterval(interval)
+    }
+  }, [isAnimating, autorouter.iterations])
+
   const purplePattern = !isAnimating
     ? exploredPatterns[maxSteps - 1]
-    : autorouter.exploredPatterns[frame % autorouter.exploredPatterns.length]
+    : autorouter.exploredPatterns[
+        frame % (autorouter.exploredPatterns.length - (solvedPattern ? 1 : 0))
+      ]
 
-  const greenPattern = [...autorouter.exploredPatterns].sort(
+  const bluePattern = [...autorouter.exploredPatterns].sort(
     (a, b) => b.f! - a.f!,
   )[0]
 
-  const traces: Trace[] = convertSegmentsToTraces(
-    getAllSegmentsFromSolvedPattern(solvedPattern!),
+  const traces: Trace[] = []
+
+  for (const pattern of autorouter.exploredPatterns) {
+    traces.push(
+      ...convertSegmentsToTraces(
+        getAllSegmentsFromSolvedPattern(pattern),
+        "rgba(255,255,0,0.3)",
+      ),
+    )
+  }
+
+  traces.push(
+    ...convertSegmentsToTraces(
+      getAllSegmentsFromSolvedPattern(solvedPattern!),
+      "rgba(0,220,0, 1)",
+    ),
   )
 
   traces.push(
@@ -105,12 +126,14 @@ export default () => {
     ),
   )
 
-  traces.push(
-    ...convertSegmentsToTraces(
-      getAllSegmentsFromSolvedPattern(greenPattern!),
-      "rgba(0,255,0,0.5)",
-    ),
-  )
+  if (!solvedPattern) {
+    traces.push(
+      ...convertSegmentsToTraces(
+        getAllSegmentsFromSolvedPattern(bluePattern!),
+        "rgba(0,0,255,0.5)",
+      ),
+    )
+  }
 
   console.log({
     solvedPattern,
@@ -131,11 +154,11 @@ export default () => {
           className="border border-gray-300 rounded-md px-2 py-1"
           onClick={() => {
             if (maxSteps > 0) {
-              setMaxSteps(maxSteps - 1)
+              setMaxSteps(maxSteps - 10)
             }
           }}
         >
-          Decrease Max Steps
+          Max Steps - 10
         </button>
         <span style={{ margin: "0 10px" }}>Max Steps: {maxSteps}</span>
         <button

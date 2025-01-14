@@ -4,10 +4,12 @@ import type { PointWithLayer2 } from "lib/types/SimpleRouteJson"
 import { hasJSDocParameterTags } from "typescript"
 import { doesIntersect } from "./doesIntersect"
 import type { ProcessedObstacle } from "./preprocessObstacles"
+import { distance } from "./distance"
 
 export interface Segment {
   A: PointWithLayer2
   B: PointWithLayer2
+  distance: number
   depth: number
   hasCollision: boolean
 }
@@ -47,6 +49,8 @@ export class AstarPatternPathFinder {
   obstacleMask: boolean[] = []
 
   solvedPattern: ProjectedPattern | null = null
+
+  GREEDY_MULTIPLER = 1.1
 
   /**
    * Find all patterns that can be reached from the current pattern, excluding
@@ -91,6 +95,7 @@ export class AstarPatternPathFinder {
             A: newA,
             B: newB,
             hasCollision,
+            distance: distance(newA, newB),
             depth: anchorSegment.depth + 1,
           }
 
@@ -110,7 +115,7 @@ export class AstarPatternPathFinder {
 
         newPattern.g = this.computeG(newPattern)
         newPattern.h = this.computeH(newPattern)
-        newPattern.f = newPattern.g! + newPattern.h!
+        newPattern.f = newPattern.g! + newPattern.h! * this.GREEDY_MULTIPLER
 
         newPatterns.push(newPattern)
       }
@@ -123,18 +128,20 @@ export class AstarPatternPathFinder {
    * Cost of the path so far
    */
   computeG(pat: ProjectedPattern) {
-    const parentG = pat.parentProjectedPattern?.g ?? 0
-
-    // Lots of opportunity to compute g differently!
-    return parentG + pat.solvedSegments.length
+    return pat.solvedSegments.reduce(
+      (acc, segment) => acc + segment.distance,
+      0,
+    )
   }
 
   /**
    * Estimated remaining cost
    */
   computeH(pat: ProjectedPattern) {
-    // Equally as much opportunity!
-    return pat.unsolvedSegments.length
+    return pat.unsolvedSegments.reduce(
+      (acc, segment) => acc + segment.distance,
+      0,
+    )
   }
 
   solve() {

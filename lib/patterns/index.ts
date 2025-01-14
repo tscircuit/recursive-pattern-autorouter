@@ -10,6 +10,18 @@ export const wideArrow = [
   { x: 1, y: 0, l: 0 },
 ]
 
+export const ultraWideArrow = [
+  { x: 0, y: 0, l: 0 },
+  { x: 1 / 2, y: 1 / 6, l: 0 },
+  { x: 1, y: 0, l: 0 },
+]
+
+export const asymmetricSharpArrow = [
+  { x: 0, y: 0, l: 0 },
+  { x: 1 / 3, y: 2 / 3, l: 0 },
+  { x: 1, y: 0, l: 0 },
+]
+
 export const doubleBend = [
   { x: 0, y: 0, l: 0 },
   { x: 1 / 4, y: 1 / 3, l: 0 },
@@ -30,4 +42,10 @@ export const singleLayerPatternSet: PatternDefinition[] = [
   flip(wideArrow),
   doubleBend,
   flip(doubleBend),
+
+  // ultraWideArrow,
+  // flip(ultraWideArrow),
+
+  // asymmetricSharpArrow,
+  // flip(asymmetricSharpArrow),
 ]
