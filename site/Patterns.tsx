@@ -9,14 +9,27 @@ const PatternPreview = ({
   pattern,
   name,
   timesUsed,
-}: { pattern: PatternDefinition; name: string; timesUsed: number }) => {
+  onToggle,
+}: {
+  pattern: PatternDefinition
+  name: string
+  timesUsed: number
+  onToggle?: (pattern: PatternDefinition) => void
+}) => {
   const start = { x: 60, y: 40, l: 0 }
   const end = { x: 90, y: 40, l: 0 }
   const projectedPoints = projectPattern(start, end, pattern)
 
   return (
-    <div className="border rounded p-1">
+    <div className="border rounded p-1 cursor-pointer">
       <div className="text-sm font-medium mb-2">
+        {onToggle ? (
+          <input
+            type="checkbox"
+            defaultChecked
+            onChange={() => onToggle?.(pattern)}
+          />
+        ) : null}
         {name} ({timesUsed})
       </div>
       <svg className="mt-[-16px]" width="150" height="80">
@@ -39,9 +52,11 @@ const PatternPreview = ({
 const Patterns = ({
   patterns = singleLayerPatternSet,
   patternDefinitionsUsed,
+  onTogglePattern,
 }: {
   patterns: PatternDefinition[]
   patternDefinitionsUsed?: Record<string, number>
+  onTogglePattern?: (pattern: PatternDefinition) => void
 }) => {
   return (
     <div className="p-4">
@@ -55,6 +70,7 @@ const Patterns = ({
             timesUsed={
               patternDefinitionsUsed?.[getPatternName(pattern) ?? ""] ?? 0
             }
+            onToggle={onTogglePattern}
           />
         ))}
       </div>

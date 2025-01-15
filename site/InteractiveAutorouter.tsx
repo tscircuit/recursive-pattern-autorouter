@@ -4,7 +4,7 @@ import {
 } from "lib/algos/AstarPatternPathFinder"
 import { useEffect, useMemo, useState } from "react"
 import type { SimpleRouteJson, Trace } from "lib/types/SimpleRouteJson"
-import { singleLayerPatternSet } from "lib/patterns"
+import { singleLayerPatternSet, type PatternDefinition } from "lib/patterns"
 import Patterns from "./Patterns"
 import { InteractiveSimpleRouteJson } from "./InteractiveSimpleRouteJson"
 
@@ -19,7 +19,9 @@ interface Props {
   doAutorouting?: (json: SimpleRouteJson, maxSteps: number) => IAutorouterResult
   svgOnly?: boolean
   defaultMaxSteps?: number
+  patternDefinitions?: PatternDefinition[]
   svgSize?: { width: number; height: number }
+  onTogglePattern?: (pattern: PatternDefinition) => void
 }
 
 function getAllSegmentsFromSolvedPattern(
@@ -47,6 +49,8 @@ export const InteractiveAutorouter: React.FC<Props> = ({
   defaultMaxSteps = 100,
   doAutorouting,
   svgOnly,
+  onTogglePattern,
+  patternDefinitions,
   svgSize,
 }) => {
   const [maxSteps, setMaxSteps] = useState(defaultMaxSteps)
@@ -171,11 +175,12 @@ export const InteractiveAutorouter: React.FC<Props> = ({
             </button>
           </div>
           <Patterns
-            patterns={singleLayerPatternSet}
+            patterns={patternDefinitions ?? singleLayerPatternSet}
             patternDefinitionsUsed={
               solvedPattern?.patternDefinitionsUsed ??
               bluePattern?.patternDefinitionsUsed
             }
+            onTogglePattern={onTogglePattern}
           />
         </>
       )}

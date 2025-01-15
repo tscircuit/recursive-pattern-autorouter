@@ -26,8 +26,6 @@ const doAutorouting = (
     B: simpleRouteJson.connections[0]!.pointsToConnect[1]!,
   })
 
-  autorouter.patternDefinitions = enabledPatterns
-
   for (let i = 0; i < maxSteps; i++) {
     if (autorouter.solvedPattern) break
     autorouter.solveOneStep()
@@ -42,38 +40,35 @@ const doAutorouting = (
 
 export default () => {
   const [enabledPatterns, setEnabledPatterns] = useState<
-    Record<number, boolean>
+    Record<string, boolean>
   >(
     Object.fromEntries(
-      namedPatterns.map((pattern) => [getPatternName(pattern), true]),
+      Object.keys(namedPatterns).map((patternName) => [patternName, true]),
     ),
   )
 
   const handlePatternToggle = (pattern: PatternDefinition) => {
     setEnabledPatterns((prev) => ({
       ...prev,
-      [getPatternName(pattern)]: !prev[pattern],
+      [getPatternName(pattern)!]: !prev[getPatternName(pattern)!],
     }))
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <InteractiveAutorouter
-            defaultSimpleRouteJson={initialSimpleRouteJson}
-            onTogglePattern={handlePatternToggle}
-            doAutorouting={(json, maxSteps) =>
-              doAutorouting(
-                json,
-                maxSteps,
-                singleLayerPatternSet.filter((_, i) => enabledPatterns[i]),
-              )
-            }
-          />
-        </div>
-      </div>
-    </div>
+    <InteractiveAutorouter
+      defaultSimpleRouteJson={initialSimpleRouteJson}
+      onTogglePattern={handlePatternToggle}
+      patternDefinitions={Object.values(namedPatterns)}
+      doAutorouting={(json, maxSteps) =>
+        doAutorouting(
+          json,
+          maxSteps,
+          Object.values(namedPatterns).filter(
+            (p) => enabledPatterns[getPatternName(p)!],
+          ),
+        )
+      }
+    />
   )
 }
 
