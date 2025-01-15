@@ -10,8 +10,8 @@ const PatternPreview = ({
   name,
   timesUsed,
 }: { pattern: PatternDefinition; name: string; timesUsed: number }) => {
-  const start = { x: 30, y: 40, l: 0 }
-  const end = { x: 120, y: 40, l: 0 }
+  const start = { x: 60, y: 40, l: 0 }
+  const end = { x: 90, y: 40, l: 0 }
   const projectedPoints = projectPattern(start, end, pattern)
 
   return (

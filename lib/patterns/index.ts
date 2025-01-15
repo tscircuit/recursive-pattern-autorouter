@@ -75,6 +75,41 @@ export const overtake2 = [
 ]
 export const flippedOvertake2 = flip(overtake2)
 
+export const arrow1 = [
+  { x: 0, y: 0, l: 0 },
+  { x: 1 / 2, y: 1, l: 0 },
+  { x: 1, y: 0, l: 0 },
+]
+export const flippedArrow1 = flip(arrow1)
+
+export const arrow2 = [
+  { x: 0, y: 0, l: 0 },
+  { x: 1 / 2, y: 1, l: 0 },
+  { x: 1.5, y: 0.5, l: 0 },
+  { x: 1, y: 0, l: 0 },
+]
+export const flippedArrow2 = flip(arrow2)
+
+export const arrow3 = [
+  { x: 0, y: 0, l: 0 },
+  { x: 0.5, y: 1, l: 0 },
+  { x: 1.5, y: 1, l: 0 },
+  { x: 1.5, y: 0.25, l: 0 },
+  { x: 1, y: 0, l: 0 },
+]
+export const flippedArrow3 = flip(arrow3)
+
+export const arrow4 = [
+  { x: 0, y: 0, l: 0 },
+  { x: -0.5, y: 0.25, l: 0 },
+  { x: -0.5, y: 1.5, l: 0 },
+  { x: 1.5, y: 1.5, l: 0 },
+  { x: 1.5, y: 1.5, l: 0 },
+  { x: 1.5, y: 0.25, l: 0 },
+  { x: 1, y: 0, l: 0 },
+]
+export const flippedArrow4 = flip(arrow4)
+
 export const namedPatterns = {
   straightLinePattern,
   wideArrow,
@@ -89,7 +124,16 @@ export const namedPatterns = {
   overtake2,
   flippedOvertake1,
   flippedOvertake2,
+  arrow1,
+  flippedArrow1,
+  arrow2,
+  flippedArrow2,
+  arrow3,
+  flippedArrow3,
+  arrow4,
+  flippedArrow4,
 }
+export const allNamedPatterns = [...Object.values(namedPatterns)]
 
 export type PatternDefinition = Array<{ x: number; y: number; l: number }>
 
@@ -111,6 +155,18 @@ export const singleLayerPatternSet: PatternDefinition[] = [
 
   ultraWideArrow,
   flippedUltraWideArrow,
+
+  // arrow1,
+  // flippedArrow1,
+
+  // arrow2,
+  // flippedArrow2,
+
+  // arrow3,
+  // flippedArrow3,
+
+  // arrow4,
+  // flippedArrow4,
 
   // overtake1,
   // flippedOvertake1,
