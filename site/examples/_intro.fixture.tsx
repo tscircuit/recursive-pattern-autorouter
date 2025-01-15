@@ -22,7 +22,7 @@ export default () => {
           Grid-based path-finding has issues as your area gets larger, but this
           path finder uses intersection math, so it doesn't matter how large the
           area is, only the number of obstacles and complexity of the acceptable
-          paths impact it's runtime.
+          paths impact its runtime.
         </div>
         <div>
           If you scroll to the bottom of the page, you can see the patterns that
