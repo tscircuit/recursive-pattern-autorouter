@@ -45,6 +45,14 @@ export const doubleBend = [
 ]
 export const flippedDoubleBend = flip(doubleBend)
 
+export const asymDoubleBend2 = [
+  { x: 0, y: 0, l: 0 },
+  { x: 1 / 4, y: 2 / 3, l: 0 },
+  { x: 1, y: 1 / 3, l: 0 },
+  { x: 1, y: 0, l: 0 },
+]
+export const flippedAsymDoubleBend2 = flip(asymDoubleBend2)
+
 const doubleBendVariants = [1 / 16, 1 / 8, 1 / 4].map((y) => [
   { x: 0, y: 0, l: 0 },
   { x: 1 / 4, y, l: 0 },
@@ -132,6 +140,8 @@ export const namedPatterns = {
   flippedArrow3,
   arrow4,
   flippedArrow4,
+  asymDoubleBend2,
+  flippedAsymDoubleBend2,
 }
 export const allNamedPatterns = [...Object.values(namedPatterns)]
 
@@ -155,6 +165,9 @@ export const singleLayerPatternSet: PatternDefinition[] = [
 
   ultraWideArrow,
   flippedUltraWideArrow,
+
+  asymDoubleBend2,
+  flippedAsymDoubleBend2,
 
   // arrow1,
   // flippedArrow1,

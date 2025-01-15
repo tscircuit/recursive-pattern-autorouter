@@ -22,6 +22,7 @@ interface Props {
   patternDefinitions?: PatternDefinition[]
   svgSize?: { width: number; height: number }
   onTogglePattern?: (pattern: PatternDefinition) => void
+  enabledPatternNames?: string[]
 }
 
 function getAllSegmentsFromSolvedPattern(
@@ -51,6 +52,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
   svgOnly,
   onTogglePattern,
   patternDefinitions,
+  enabledPatternNames,
   svgSize,
 }) => {
   const [maxSteps, setMaxSteps] = useState(defaultMaxSteps)
@@ -61,7 +63,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
   const autorouterResult = useMemo(() => {
     if (!doAutorouting) return null
     return doAutorouting(simpleRouteJson, maxSteps)
-  }, [maxSteps, simpleRouteJson])
+  }, [maxSteps, simpleRouteJson, enabledPatternNames])
 
   useEffect(() => {
     if (isAnimating && autorouterResult) {
@@ -175,6 +177,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
             </button>
           </div>
           <Patterns
+            enabledPatternNames={enabledPatternNames}
             patterns={patternDefinitions ?? singleLayerPatternSet}
             patternDefinitionsUsed={
               solvedPattern?.patternDefinitionsUsed ??

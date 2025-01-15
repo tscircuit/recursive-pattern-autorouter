@@ -10,11 +10,13 @@ const PatternPreview = ({
   name,
   timesUsed,
   onToggle,
+  checked,
 }: {
   pattern: PatternDefinition
   name: string
   timesUsed: number
   onToggle?: (pattern: PatternDefinition) => void
+  checked?: boolean
 }) => {
   const start = { x: 60, y: 40, l: 0 }
   const end = { x: 90, y: 40, l: 0 }
@@ -26,7 +28,7 @@ const PatternPreview = ({
         {onToggle ? (
           <input
             type="checkbox"
-            defaultChecked
+            checked={checked}
             onChange={() => onToggle?.(pattern)}
           />
         ) : null}
@@ -51,21 +53,26 @@ const PatternPreview = ({
 
 const Patterns = ({
   patterns = singleLayerPatternSet,
+  enabledPatternNames,
   patternDefinitionsUsed,
   onTogglePattern,
 }: {
   patterns: PatternDefinition[]
+  enabledPatternNames?: string[]
   patternDefinitionsUsed?: Record<string, number>
   onTogglePattern?: (pattern: PatternDefinition) => void
 }) => {
   return (
     <div className="p-4">
       <h2 className="text-lg font-semibold mb-4">Available Patterns</h2>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {patterns.map((pattern, index) => (
           <PatternPreview
             key={index}
             pattern={pattern}
+            checked={enabledPatternNames?.includes(
+              getPatternName(pattern) ?? "",
+            )}
             name={getPatternName(pattern) ?? "unknown"}
             timesUsed={
               patternDefinitionsUsed?.[getPatternName(pattern) ?? ""] ?? 0

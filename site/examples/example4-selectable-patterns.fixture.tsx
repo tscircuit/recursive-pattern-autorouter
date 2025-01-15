@@ -43,7 +43,7 @@ export default () => {
     Record<string, boolean>
   >(
     Object.fromEntries(
-      Object.keys(namedPatterns).map((patternName) => [patternName, true]),
+      Object.keys(namedPatterns).map((patternName) => [patternName, false]),
     ),
   )
 
@@ -58,6 +58,9 @@ export default () => {
     <InteractiveAutorouter
       defaultSimpleRouteJson={initialSimpleRouteJson}
       onTogglePattern={handlePatternToggle}
+      enabledPatternNames={Object.keys(enabledPatterns).filter(
+        (patternName) => enabledPatterns[patternName],
+      )}
       patternDefinitions={Object.values(namedPatterns)}
       doAutorouting={(json, maxSteps) =>
         doAutorouting(
