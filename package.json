@@ -7,7 +7,8 @@
     "start": "cosmos",
     "build": "tsup lib/index.ts lib/server/index.ts ./cli/cli.ts --format esm --dts",
     "format": "biome format --write .",
-    "format:check": "biome format ."
+    "format:check": "biome format .",
+    "vercel-build": "cosmos-export"
   },
   "exports": {
     ".": "./dist/lib/index.js",
