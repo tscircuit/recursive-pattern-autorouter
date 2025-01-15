@@ -12,28 +12,9 @@ const doAutorouting = (simpleRouteJson: SimpleRouteJson, maxSteps: number) => {
   autorouter.processedObstacles = processObstacles(simpleRouteJson.obstacles)
   autorouter.obstacleMask = autorouter.processedObstacles.map((_) => true)
 
-  autorouter.openSet.push({
-    parentProjectedPattern: null,
-    parentSegmentIndex: -1,
-
-    unsolvedSegments: [
-      {
-        A: { ...simpleRouteJson.connections[0]!.pointsToConnect[0]!, l: 0 },
-        B: { ...simpleRouteJson.connections[0]!.pointsToConnect[1]!, l: 0 },
-        hasCollision: true,
-        // jumpsFromA: 0,
-        depth: 0,
-        distance: distance(
-          simpleRouteJson.connections[0]!.pointsToConnect[0]!,
-          simpleRouteJson.connections[0]!.pointsToConnect[1]!,
-        ),
-      },
-    ],
-    solvedSegments: [],
-    patternDefinitionsUsed: {},
-    g: 0,
-    h: 0,
-    f: 0,
+  autorouter.init({
+    A: simpleRouteJson.connections[0]!.pointsToConnect[0]!,
+    B: simpleRouteJson.connections[0]!.pointsToConnect[1]!,
   })
 
   for (let i = 0; i < maxSteps; i++) {

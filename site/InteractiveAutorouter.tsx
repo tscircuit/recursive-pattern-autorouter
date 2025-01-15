@@ -57,7 +57,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
   const autorouterResult = useMemo(() => {
     if (!doAutorouting) return null
     return doAutorouting(simpleRouteJson, maxSteps)
-  }, [doAutorouting, maxSteps, simpleRouteJson])
+  }, [maxSteps, simpleRouteJson])
 
   useEffect(() => {
     if (isAnimating && autorouterResult) {

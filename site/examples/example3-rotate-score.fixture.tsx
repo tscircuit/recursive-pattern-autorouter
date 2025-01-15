@@ -1,80 +1,91 @@
 import { AstarPatternPathFinder } from "lib/algos/AstarPatternPathFinder"
 import { distance } from "lib/algos/distance"
 import { processObstacles } from "lib/algos/preprocessObstacles"
+import { singleLayerPatternSet } from "lib/patterns"
 import type { SimpleRouteJson } from "lib/types/SimpleRouteJson"
+import { useReducer } from "react"
 import { InteractiveAutorouter } from "site/InteractiveAutorouter"
-
-const doAutorouting = (simpleRouteJson: SimpleRouteJson, maxSteps: number) => {
-  const autorouter = new AstarPatternPathFinder()
-
-  autorouter.processedObstacles = processObstacles(simpleRouteJson.obstacles)
-  autorouter.obstacleMask = autorouter.processedObstacles.map((_) => true)
-
-  autorouter.openSet.push({
-    parentProjectedPattern: null,
-    parentSegmentIndex: -1,
-
-    unsolvedSegments: [
-      {
-        A: { ...simpleRouteJson.connections[0]!.pointsToConnect[0]!, l: 0 },
-        B: { ...simpleRouteJson.connections[0]!.pointsToConnect[1]!, l: 0 },
-        hasCollision: true,
-        // jumpsFromA: 0,
-        depth: 0,
-        distance: distance(
-          simpleRouteJson.connections[0]!.pointsToConnect[0]!,
-          simpleRouteJson.connections[0]!.pointsToConnect[1]!,
-        ),
-      },
-    ],
-    solvedSegments: [],
-    patternDefinitionsUsed: {},
-    g: 0,
-    h: 0,
-    f: 0,
-  })
-
-  for (let i = 0; i < maxSteps; i++) {
-    if (autorouter.solvedPattern) break
-    autorouter.solveOneStep()
-  }
-
-  return {
-    exploredPatterns: autorouter.exploredPatterns,
-    solvedPattern: autorouter.solvedPattern,
-    iterations: autorouter.iterations,
-  }
-}
+import Patterns from "site/Patterns"
 
 export default () => {
-  const outerPoints = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45].map((deg) => ({
-    x: Math.cos(deg * (Math.PI / 180)) * 4,
-    y: Math.sin(deg * (Math.PI / 180)) * 4,
-  }))
+  const [wins, incWins] = useReducer(
+    (state: number, action: void) => state + 1,
+    0,
+  )
+
+  const [losses, incLosses] = useReducer(
+    (state: number, action: void) => state + 1,
+    0,
+  )
+
+  const outerPoints = [0, 5, 10, 12, 15, 20, 25, 30, 32, 35, 40, 45].map(
+    (deg) => ({
+      x: Math.cos(deg * (Math.PI / 180)) * 4,
+      y: Math.sin(deg * (Math.PI / 180)) * 4,
+    }),
+  )
+
+  const doAutorouting = (
+    simpleRouteJson: SimpleRouteJson,
+    maxSteps: number,
+  ) => {
+    const autorouter = new AstarPatternPathFinder()
+
+    autorouter.processedObstacles = processObstacles(simpleRouteJson.obstacles)
+    autorouter.obstacleMask = autorouter.processedObstacles.map((_) => true)
+
+    autorouter.init({
+      A: simpleRouteJson.connections[0]!.pointsToConnect[0]!,
+      B: simpleRouteJson.connections[0]!.pointsToConnect[1]!,
+    })
+
+    for (let i = 0; i < maxSteps; i++) {
+      if (autorouter.solvedPattern) break
+      autorouter.solveOneStep()
+    }
+
+    if (autorouter.solvedPattern) {
+      incWins()
+    } else {
+      incLosses()
+    }
+
+    return {
+      exploredPatterns: autorouter.exploredPatterns,
+      solvedPattern: autorouter.solvedPattern,
+      iterations: autorouter.iterations,
+    }
+  }
 
   return (
-    <div className="grid grid-cols-3">
-      {outerPoints.map((point, index) => (
-        <InteractiveAutorouter
-          key={index}
-          svgOnly
-          svgSize={{ width: 400, height: 300 }}
-          defaultMaxSteps={300}
-          defaultSimpleRouteJson={{
-            ...simpleRouteJson,
-            connections: [
-              {
-                name: `trace_${index}`,
-                pointsToConnect: [
-                  { x: -2, y: 0, layer: "top" },
-                  { ...point, layer: "top" },
-                ],
-              },
-            ],
-          }}
-          doAutorouting={doAutorouting}
-        />
-      ))}
+    <div>
+      <div className="p-4">
+        Wins: {wins} / {wins + losses}
+      </div>
+      <div className="grid grid-cols-4">
+        {outerPoints.map((point, index) => (
+          <InteractiveAutorouter
+            key={index}
+            svgOnly
+            svgSize={{ width: 300, height: 200 }}
+            defaultMaxSteps={200}
+            defaultSimpleRouteJson={{
+              ...simpleRouteJson,
+              connections: [
+                {
+                  name: `trace_${index}`,
+                  pointsToConnect: [
+                    { x: -0.8, y: -1.2, layer: "top" },
+                    { ...point, layer: "top" },
+                  ],
+                },
+              ],
+            }}
+            doAutorouting={doAutorouting}
+          />
+        ))}
+      </div>
+      <Patterns patterns={singleLayerPatternSet} />
     </div>
   )
 }

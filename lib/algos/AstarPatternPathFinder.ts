@@ -4,7 +4,7 @@ import {
   type PatternDefinition,
 } from "lib/patterns"
 import { projectPattern } from "lib/patterns/projectPattern"
-import type { PointWithLayer2 } from "lib/types/SimpleRouteJson"
+import type { PointWithLayer, PointWithLayer2 } from "lib/types/SimpleRouteJson"
 import { hasJSDocParameterTags } from "typescript"
 import { doesIntersect } from "./doesIntersect"
 import type { ProcessedObstacle } from "./preprocessObstacles"
@@ -56,7 +56,9 @@ export class AstarPatternPathFinder {
 
   solvedPattern: ProjectedPattern | null = null
 
-  GREEDY_MULTIPLER = 1.1
+  goalStraightLineDistance: number = 0
+
+  GREEDY_MULTIPLER = 1.2
 
   /**
    * Find all patterns that can be reached from the current pattern, excluding
@@ -151,10 +153,53 @@ export class AstarPatternPathFinder {
    * Estimated remaining cost
    */
   computeH(pat: ProjectedPattern) {
-    return pat.unsolvedSegments.reduce(
-      (acc, segment) => acc + segment.distance,
-      0,
-    )
+    return pat.unsolvedSegments.reduce((acc, segment) => {
+      // This is the simplest heuristic. It has no penalty for depth, meaning
+      // you can get into a situation where a small segment grows
+      // increasingly complex
+      // return acc + segment.distance
+
+      // Only penalize depth, scale by goal distance to be compatible with G
+      // This will lead to less complex paths, but much longer as we avoid
+      // shortcuts that would increase complexity
+      // return acc + (segment.depth * this.goalStraightLineDistance) / 10
+
+      return (
+        acc +
+        segment.distance +
+        (1 + segment.depth / 10) * this.goalStraightLineDistance
+      )
+    }, 0)
+  }
+
+  init({
+    A,
+    B,
+  }: {
+    A?: PointWithLayer | PointWithLayer2
+    B?: PointWithLayer | PointWithLayer2
+  }) {
+    this.goalStraightLineDistance = distance(A, B)
+
+    this.openSet.push({
+      parentProjectedPattern: null,
+      parentSegmentIndex: -1,
+
+      unsolvedSegments: [
+        {
+          A: { ...A!, l: 0 },
+          B: { ...B!, l: 0 },
+          hasCollision: true,
+          depth: 0,
+          distance: distance(A!, B!),
+        },
+      ],
+      solvedSegments: [],
+      patternDefinitionsUsed: {},
+      g: 0,
+      h: 0,
+      f: 0,
+    })
   }
 
   solve() {

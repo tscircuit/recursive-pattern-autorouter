@@ -17,6 +17,13 @@ export const wideArrow = [
 
 export const flippedWideArrow = flip(wideArrow)
 
+const wideArrowVariants = [1 / 5, 1 / 3, 1 / 2].map((y) => [
+  { x: 0, y: 0, l: 0 },
+  { x: 1 / 2, y, l: 0 },
+  { x: 1, y: 0, l: 0 },
+])
+const flippedWideArrowVariants = wideArrowVariants.map(flip)
+
 export const ultraWideArrow = [
   { x: 0, y: 0, l: 0 },
   { x: 1 / 2, y: 1 / 6, l: 0 },
@@ -66,12 +73,15 @@ export const singleLayerPatternSet: PatternDefinition[] = [
   // we omit the straight line pattern, it has some special handling
   // straightLinePattern,
 
-  wideArrow,
-  flippedWideArrow,
+  // wideArrow,
+  // flippedWideArrow,
 
-  // doubleBend,
-  // flippedDoubleBend,
+  doubleBend,
+  flippedDoubleBend,
 
   // hardLeft,
   // flippedHardLeft,
+
+  ...wideArrowVariants,
+  ...flippedWideArrowVariants,
 ]
