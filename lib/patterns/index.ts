@@ -153,6 +153,17 @@ export const getPatternName = (pattern: PatternDefinition) => {
   )
 }
 
+export const getFlippedPatternName = (pattern: PatternDefinition) => {
+  const allNames = Object.keys(namedPatterns)
+  const name = allNames.find(
+    (key) => namedPatterns[key as keyof typeof namedPatterns] === pattern,
+  )
+
+  if (!name) return null
+
+  return `flipped${name[0].toUpperCase()}${name.slice(1)}`
+}
+
 export const singleLayerPatternSet: PatternDefinition[] = [
   // we omit the straight line pattern, it has some special handling
   // straightLinePattern,

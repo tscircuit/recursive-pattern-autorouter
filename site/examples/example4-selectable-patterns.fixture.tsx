@@ -1,6 +1,7 @@
 import { AstarPatternPathFinder } from "lib/algos/AstarPatternPathFinder"
 import { processObstacles } from "lib/algos/preprocessObstacles"
 import {
+  getFlippedPatternName,
   getPatternName,
   namedPatterns,
   singleLayerPatternSet,
@@ -51,6 +52,7 @@ export default () => {
     setEnabledPatterns((prev) => ({
       ...prev,
       [getPatternName(pattern)!]: !prev[getPatternName(pattern)!],
+      [getFlippedPatternName(pattern)!]: !prev[getFlippedPatternName(pattern)!],
     }))
   }
 
