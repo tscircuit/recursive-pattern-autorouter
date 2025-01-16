@@ -60,7 +60,7 @@ export default () => {
           const [A, B] = srj.connections[0].pointsToConnect as any
 
           const paths = PatternFns.applyPatternFn(
-            PatternFns[selectedPattern as keyof typeof PatternFns],
+            PatternFns[selectedPattern as keyof typeof PatternFns] as any,
             A,
             B,
           )
