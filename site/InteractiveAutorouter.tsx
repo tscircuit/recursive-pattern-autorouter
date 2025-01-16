@@ -180,7 +180,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
               {isAnimating ? "Stop" : "Start"} Animating
             </button>
           </div>
-          {!showAvailablePatterns && (
+          {showAvailablePatterns && (
             <Patterns
               enabledPatternNames={enabledPatternNames}
               patterns={patternDefinitions ?? singleLayerPatternSet}

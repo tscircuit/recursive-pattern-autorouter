@@ -14,8 +14,8 @@ const simpleRouteJson: SimpleRouteJson = {
     {
       name: "main_connection",
       pointsToConnect: [
-        { x: -4, y: 0, layer: "top" },
-        { x: 4, y: 0, layer: "top" },
+        { x: -3, y: -1.5, layer: "top" },
+        { x: 3, y: 1.5, layer: "top" },
       ],
     },
   ],
@@ -34,9 +34,8 @@ const availablePatterns = Object.keys(PatternFns).filter(
 )
 
 export default () => {
-  const [selectedPattern, setSelectedPattern] = useState<string>(
-    availablePatterns[0],
-  )
+  const [selectedPattern, setSelectedPattern] =
+    useState<string>("squareCorner45")
 
   return (
     <div>

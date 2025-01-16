@@ -226,14 +226,14 @@ export const doubleBend45: PatternFnDefinition = {
 export const squareCorner45: PatternFnDefinition = {
   name: "squareCorner45",
   variants: [
-    { dir: 1, heightFraction: 1 / 2, cornerFraction: 1 / 4 },
-    { dir: -1, heightFraction: 1 / 2, cornerFraction: 1 / 4 },
-    { dir: 1, heightFraction: 1 / 4, cornerFraction: 1 / 4 },
-    { dir: -1, heightFraction: 1 / 4, cornerFraction: 1 / 4 },
-    { dir: 1, heightFraction: 1 / 2, cornerFraction: 1 / 2 },
-    { dir: -1, heightFraction: 1 / 2, cornerFraction: 1 / 2 },
     { dir: 1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
     { dir: -1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
+    // { dir: 1, heightFraction: 1 / 4, cornerFraction: 1 / 4 },
+    // { dir: -1, heightFraction: 1 / 4, cornerFraction: 1 / 4 },
+    // { dir: 1, heightFraction: 1 / 2, cornerFraction: 1 / 2 },
+    // { dir: -1, heightFraction: 1 / 2, cornerFraction: 1 / 2 },
+    // { dir: 1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
+    // { dir: -1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
   ],
   fn: presortAB2((A, B, { dir, heightFraction, cornerFraction }) => {
     const dx = B.x - A.x
