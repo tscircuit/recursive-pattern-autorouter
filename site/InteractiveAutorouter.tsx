@@ -24,6 +24,7 @@ interface Props {
   showAvailablePatterns?: boolean
   onTogglePattern?: (pattern: PatternDefinition) => void
   enabledPatternNames?: string[]
+  onChangeSimpleRouteJson?: (json: SimpleRouteJson) => void
   exploredPatternColor?: string
 }
 
@@ -49,6 +50,7 @@ function convertSegmentsToTraces(segments: Segment[], color?: string): Trace[] {
 
 export const InteractiveAutorouter: React.FC<Props> = ({
   defaultSimpleRouteJson: defaultSimpleRouteJson,
+  onChangeSimpleRouteJson,
   defaultMaxSteps = 100,
   doAutorouting,
   svgOnly,
@@ -136,7 +138,10 @@ export const InteractiveAutorouter: React.FC<Props> = ({
         svgSize={svgSize}
         iterations={autorouterResult?.iterations}
         simpleRouteJson={{ ...simpleRouteJson, traces }}
-        onChangeSimpleRouteJson={setSimpleRouteJson}
+        onChangeSimpleRouteJson={(srj) => {
+          setSimpleRouteJson(srj)
+          onChangeSimpleRouteJson?.(srj)
+        }}
       />
       {!svgOnly && (
         <>

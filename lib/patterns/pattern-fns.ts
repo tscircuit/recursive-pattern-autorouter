@@ -152,17 +152,55 @@ export const gapAndCorner45: PatternFnDefinition = {
   }),
 }
 
+export const singleBend45: PatternFnDefinition = {
+  name: "singleBend45",
+  variants: [
+    { xFlip: 1, yFlip: 1, offset: 0 },
+    { xFlip: -1, yFlip: 1, offset: 0 },
+
+    { xFlip: 1, yFlip: 1, offset: -0.5 },
+    { xFlip: -1, yFlip: 1, offset: -0.5 },
+
+    { xFlip: 1, yFlip: 1, offset: 0.5 },
+    { xFlip: -1, yFlip: 1, offset: 0.5 },
+  ],
+  fn: presortAB2((A, B, { offset }) => {
+    const dx = B.x - A.x
+    const dy = B.y - A.y
+    const udy = Math.sign(dy)
+
+    if (dy > dx) return null
+
+    const midpoint = {
+      x: A.x + dx / 2,
+      y: A.y + (udy * dx) / 2,
+      l: 0,
+    }
+
+    const maxOffsetDist = A.x - (midpoint.x - dy / 2)
+
+    return [
+      A,
+      { x: midpoint.x - dy / 2 - offset * maxOffsetDist, y: A.y, l: 0 },
+      { x: midpoint.x + dy / 2 - offset * maxOffsetDist, y: B.y, l: 0 },
+      B,
+    ]
+  }),
+}
+
 export const overshoot45: PatternFnDefinition = {
   name: "overshoot45",
 
-  fn: presortAB((A, B) => {
+  variants: addXYFlips({}),
+
+  fn: presortAB2((A, B) => {
     const dx = B.x - A.x
     const dy = B.y - A.y
 
-    const udy = Math.sign(dy)
+    if (dy > dx) return null
 
     const updist = dx / 2
-    const arrowTopY = A.y + updist * udy
+    const arrowTopY = A.y + updist
 
     return [
       A,
@@ -241,14 +279,19 @@ export const squareCorner45: PatternFnDefinition = {
   variants: [
     ...addXYFlips({ heightFraction: 3 / 4, cornerFraction: 1 / 2 }),
     ...addXYFlips({ heightFraction: 1 / 2, cornerFraction: 2 / 3 }),
+    ...addXYFlips({ heightFraction: 1 / 4, cornerFraction: 2 / 3 }),
+    ...addXYFlips({ heightFraction: 1 / 8, cornerFraction: 2 / 3 }),
   ],
   fn: presortAB2((A, B, { dir, heightFraction, cornerFraction }) => {
     const dx = B.x - A.x
     const dy = B.y - A.y
+    if (dy > dx) return null
 
     const dist = dx
     const height = dist * heightFraction
     const cornerSize = height * cornerFraction
+
+    if (dy > cornerSize) return null
 
     if (B.y > A.y + height && B.y < A.y + height + cornerSize) {
       return null

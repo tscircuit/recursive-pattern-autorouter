@@ -9,6 +9,7 @@ import { distance } from "lib/algos/distance"
 import { useState } from "react"
 import { AstarPatternFnPathFinder } from "lib/algos/AstarPatternFnPathFinder"
 import { processObstacles } from "lib/algos/preprocessObstacles"
+import useLocalStorageState from "use-local-storage-state"
 
 const initialSimpleRouteJson: SimpleRouteJson = {
   obstacles: [],
@@ -36,21 +37,26 @@ const availablePatterns = Object.keys(PatternFns).filter(
 )
 
 export default () => {
+  const [simpleRouteJson, setSimpleRouteJson] = useLocalStorageState("srj", {
+    defaultValue: initialSimpleRouteJson,
+  })
   return (
     <div>
       <InteractiveAutorouter
-        defaultSimpleRouteJson={initialSimpleRouteJson}
+        defaultSimpleRouteJson={simpleRouteJson}
+        onChangeSimpleRouteJson={setSimpleRouteJson}
         defaultMaxSteps={100}
         showAvailablePatterns={false}
         // enabledPatternNames={[selectedPattern]}
         doAutorouting={(srj, maxSteps) => {
           const autorouter = new AstarPatternFnPathFinder()
           autorouter.patternFns = [
-            // PatternFns.corner45,
+            PatternFns.corner45,
             PatternFns.doubleBend45,
             PatternFns.squareCorner45,
             // PatternFns.overshoot45,
-            // PatternFns.gapAndCorner45,
+            PatternFns.singleBend45,
+            PatternFns.gapAndCorner45,
           ]
 
           autorouter.processedObstacles = processObstacles(srj.obstacles)

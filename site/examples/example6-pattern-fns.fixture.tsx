@@ -34,7 +34,8 @@ const availablePatterns = Object.keys(PatternFns).filter(
 )
 
 export default () => {
-  const [selectedPattern, setSelectedPattern] = useState<string>("doubleBend45")
+  const [selectedPattern, setSelectedPattern] =
+    useState<string>("squareCorner45")
 
   return (
     <div>
