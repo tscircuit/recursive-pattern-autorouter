@@ -21,6 +21,7 @@ interface Props {
   defaultMaxSteps?: number
   patternDefinitions?: PatternDefinition[]
   svgSize?: { width: number; height: number }
+  showAvailablePatterns?: boolean
   onTogglePattern?: (pattern: PatternDefinition) => void
   enabledPatternNames?: string[]
 }
@@ -53,6 +54,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
   onTogglePattern,
   patternDefinitions,
   enabledPatternNames,
+  showAvailablePatterns = true,
   svgSize,
 }) => {
   const [maxSteps, setMaxSteps] = useState(defaultMaxSteps)
@@ -176,15 +178,17 @@ export const InteractiveAutorouter: React.FC<Props> = ({
               {isAnimating ? "Stop" : "Start"} Animating
             </button>
           </div>
-          <Patterns
-            enabledPatternNames={enabledPatternNames}
-            patterns={patternDefinitions ?? singleLayerPatternSet}
-            patternDefinitionsUsed={
-              solvedPattern?.patternDefinitionsUsed ??
-              bluePattern?.patternDefinitionsUsed
-            }
-            onTogglePattern={onTogglePattern}
-          />
+          {!showAvailablePatterns && (
+            <Patterns
+              enabledPatternNames={enabledPatternNames}
+              patterns={patternDefinitions ?? singleLayerPatternSet}
+              patternDefinitionsUsed={
+                solvedPattern?.patternDefinitionsUsed ??
+                bluePattern?.patternDefinitionsUsed
+              }
+              onTogglePattern={onTogglePattern}
+            />
+          )}
         </>
       )}
     </>
