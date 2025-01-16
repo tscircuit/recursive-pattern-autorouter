@@ -21,8 +21,11 @@ interface Props {
   defaultMaxSteps?: number
   patternDefinitions?: PatternDefinition[]
   svgSize?: { width: number; height: number }
+  showAvailablePatterns?: boolean
   onTogglePattern?: (pattern: PatternDefinition) => void
   enabledPatternNames?: string[]
+  onChangeSimpleRouteJson?: (json: SimpleRouteJson) => void
+  exploredPatternColor?: string
 }
 
 function getAllSegmentsFromSolvedPattern(
@@ -47,13 +50,16 @@ function convertSegmentsToTraces(segments: Segment[], color?: string): Trace[] {
 
 export const InteractiveAutorouter: React.FC<Props> = ({
   defaultSimpleRouteJson: defaultSimpleRouteJson,
+  onChangeSimpleRouteJson,
   defaultMaxSteps = 100,
   doAutorouting,
   svgOnly,
   onTogglePattern,
   patternDefinitions,
   enabledPatternNames,
+  showAvailablePatterns = true,
   svgSize,
+  exploredPatternColor,
 }) => {
   const [maxSteps, setMaxSteps] = useState(defaultMaxSteps)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -94,7 +100,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
     traces.push(
       ...convertSegmentsToTraces(
         getAllSegmentsFromSolvedPattern(pattern),
-        "rgba(255,255,0,0.3)",
+        exploredPatternColor ?? "rgba(255,255,0,0.3)",
       ),
     )
   }
@@ -132,7 +138,10 @@ export const InteractiveAutorouter: React.FC<Props> = ({
         svgSize={svgSize}
         iterations={autorouterResult?.iterations}
         simpleRouteJson={{ ...simpleRouteJson, traces }}
-        onChangeSimpleRouteJson={setSimpleRouteJson}
+        onChangeSimpleRouteJson={(srj) => {
+          setSimpleRouteJson(srj)
+          onChangeSimpleRouteJson?.(srj)
+        }}
       />
       {!svgOnly && (
         <>
@@ -176,15 +185,17 @@ export const InteractiveAutorouter: React.FC<Props> = ({
               {isAnimating ? "Stop" : "Start"} Animating
             </button>
           </div>
-          <Patterns
-            enabledPatternNames={enabledPatternNames}
-            patterns={patternDefinitions ?? singleLayerPatternSet}
-            patternDefinitionsUsed={
-              solvedPattern?.patternDefinitionsUsed ??
-              bluePattern?.patternDefinitionsUsed
-            }
-            onTogglePattern={onTogglePattern}
-          />
+          {showAvailablePatterns && (
+            <Patterns
+              enabledPatternNames={enabledPatternNames}
+              patterns={patternDefinitions ?? singleLayerPatternSet}
+              patternDefinitionsUsed={
+                solvedPattern?.patternDefinitionsUsed ??
+                bluePattern?.patternDefinitionsUsed
+              }
+              onTogglePattern={onTogglePattern}
+            />
+          )}
         </>
       )}
     </>

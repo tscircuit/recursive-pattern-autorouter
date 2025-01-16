@@ -64,6 +64,7 @@ export default () => {
         (patternName) => enabledPatterns[patternName],
       )}
       patternDefinitions={Object.values(namedPatterns)}
+      showAvailablePatterns
       doAutorouting={(json, maxSteps) =>
         doAutorouting(
           json,
