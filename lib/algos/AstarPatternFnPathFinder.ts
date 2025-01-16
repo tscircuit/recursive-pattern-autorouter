@@ -91,6 +91,7 @@ export class AstarPatternFnPathFinder {
         )
 
         for (const projectedPoints of projectedPointVariants) {
+          if (!projectedPoints) continue
           const patternName = patternFnDef.name
 
           const patternDefinitionsUsed = { ...pat.patternDefinitionsUsed }

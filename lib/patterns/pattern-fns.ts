@@ -41,6 +41,54 @@ const presortAB =
     return fn(A, B, variant)
   }
 
+const presortAB2 = (fn: PatternFn) => {
+  const NormalizeALowerLeftBTopRight = (
+    A: PointWithLayer2,
+    B: PointWithLayer2,
+    variant?: any,
+  ) => {
+    if (A.x < B.x && A.y < B.y) {
+      return fn(A, B, variant)
+    }
+    if (A.x > B.x && A.y > B.y) {
+      return fn(B, A, variant)
+    }
+    if (A.x < B.x && A.y > B.y) {
+      const result = fn(
+        { x: A.x, y: B.y, l: A.l },
+        { x: B.x, y: A.y, l: B.l },
+        variant,
+      )
+      if (!result) return null
+      return result.map((p) => ({ x: p.x, y: A.y - (p.y - B.y), l: p.l }))
+    }
+    if (A.x > B.x && A.y < B.y) {
+      const result = fn(
+        { x: B.x, y: A.y, l: B.l },
+        { x: A.x, y: B.y, l: A.l },
+        variant,
+      )
+      if (!result) return null
+      return result.map((p) => ({ x: p.x, y: B.y - (p.y - A.y), l: p.l }))
+    }
+    return null
+  }
+
+  return (A: PointWithLayer2, B: PointWithLayer2, variant?: any) => {
+    const result = NormalizeALowerLeftBTopRight(B, A, variant)
+
+    if (variant?.dir === -1) {
+      return result?.map((p) => ({
+        x: A.x - (p.x - B.x),
+        y: A.y - (p.y - B.y),
+        l: p.l,
+      }))
+    }
+
+    return result
+  }
+}
+
 export const gapAndCorner45: PatternFnDefinition = {
   name: "gapAndCorner45",
 
@@ -180,14 +228,25 @@ export const squareCorner45: PatternFnDefinition = {
   variants: [
     { dir: 1, heightFraction: 1 / 2, cornerFraction: 1 / 4 },
     { dir: -1, heightFraction: 1 / 2, cornerFraction: 1 / 4 },
+    { dir: 1, heightFraction: 1 / 4, cornerFraction: 1 / 4 },
+    { dir: -1, heightFraction: 1 / 4, cornerFraction: 1 / 4 },
+    { dir: 1, heightFraction: 1 / 2, cornerFraction: 1 / 2 },
+    { dir: -1, heightFraction: 1 / 2, cornerFraction: 1 / 2 },
+    { dir: 1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
+    { dir: -1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
   ],
-  fn: presortAB((A, B, { dir, heightFraction, cornerFraction }) => {
+  fn: presortAB2((A, B, { dir, heightFraction, cornerFraction }) => {
     const dx = B.x - A.x
     const dy = B.y - A.y
 
     const dist = dx
     const height = dist * heightFraction
     const cornerSize = height * cornerFraction
+
+    if (B.y > A.y + height && B.y < A.y + height + cornerSize) {
+      return null
+    }
+
     const bCornerDir = B.y > A.y + height ? -1 : 1
 
     return [
