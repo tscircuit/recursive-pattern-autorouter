@@ -24,7 +24,8 @@ type PatternFnDefinition = {
  * If vertical, A.y < B.y
  */
 const presortAB =
-  (fn: PatternFn) => (A: PointWithLayer2, B: PointWithLayer2) => {
+  (fn: PatternFn) =>
+  (A: PointWithLayer2, B: PointWithLayer2, variant?: any) => {
     if (A.x > B.x) {
       return fn(B, A)
     }
@@ -33,26 +34,83 @@ const presortAB =
         return fn(B, A)
       }
     }
-    return fn(A, B)
+    return fn(A, B, variant)
   }
 
 export const cornerPatternFn: PatternFnDefinition = {
   name: "corner45",
 
-  variants: [{ cornerSizeFraction: 1 / 2 }, { cornerSizeFraction: 1 / 4 }],
+  variants: [
+    { cornerSizeFraction: 1 / 2 },
+    { cornerSizeFraction: 1 / 3 },
+    { cornerSizeFraction: 2 / 3 },
+    { cornerSizeFraction: 9 / 10 },
+  ],
 
   fn: presortAB((A, B, variant) => {
     const { cornerSizeFraction } = variant!
     const dx = B.x - A.x
     const dy = B.y - A.y
 
+    const udy = Math.sign(dy)
+
     const shortestDist = Math.min(Math.abs(dx), Math.abs(dy))
+    const cornerSize = shortestDist * cornerSizeFraction
 
     return [
       A,
-      { x: A.x + dx * (1 - cornerSize), y: A.y },
-
+      { x: B.x - cornerSize, y: A.y, l: 0 },
+      { x: B.x, y: A.y + udy * cornerSize, l: 0 },
       B,
     ]
   }),
+}
+
+export const overshoot45: PatternFnDefinition = {
+  name: "overshoot45",
+
+  fn: presortAB((A, B) => {
+    const dx = B.x - A.x
+    const dy = B.y - A.y
+
+    const udy = Math.sign(dy)
+
+    const updist = dx / 2
+    const arrowTopY = A.y + updist * udy
+
+    return [
+      A,
+      { x: A.x + updist, y: arrowTopY, l: 0 },
+      { x: A.x + updist + Math.abs(B.y - arrowTopY), y: B.y, l: 0 },
+      B,
+    ]
+  }),
+}
+
+export const corner45: PatternFnDefinition = {
+  name: "corner45",
+  fn: presortAB((A, B) => {
+    const dx = B.x - A.x
+    const dy = B.y - A.y
+    const udy = Math.sign(dy)
+
+    return [A, { x: A.x + dy + (dx - dy) / 2, y: B.y + (dx - dy) / 2, l: 0 }, B]
+  }),
+}
+
+export type Path = PointWithLayer2[]
+
+export const applyPatternFn = (
+  patternFn: PatternFnDefinition,
+  A: PointWithLayer2,
+  B: PointWithLayer2,
+): Path[] => {
+  const paths: Path[] = []
+  for (const variant of patternFn.variants ?? [null]) {
+    const points = patternFn.fn(A, B, variant)
+    if (points) {
+      paths.push(points)
+    }
+  }
+  return paths
 }

@@ -24,6 +24,7 @@ interface Props {
   showAvailablePatterns?: boolean
   onTogglePattern?: (pattern: PatternDefinition) => void
   enabledPatternNames?: string[]
+  exploredPatternColor?: string
 }
 
 function getAllSegmentsFromSolvedPattern(
@@ -56,6 +57,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
   enabledPatternNames,
   showAvailablePatterns = true,
   svgSize,
+  exploredPatternColor,
 }) => {
   const [maxSteps, setMaxSteps] = useState(defaultMaxSteps)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -96,7 +98,7 @@ export const InteractiveAutorouter: React.FC<Props> = ({
     traces.push(
       ...convertSegmentsToTraces(
         getAllSegmentsFromSolvedPattern(pattern),
-        "rgba(255,255,0,0.3)",
+        exploredPatternColor ?? "rgba(255,255,0,0.3)",
       ),
     )
   }
