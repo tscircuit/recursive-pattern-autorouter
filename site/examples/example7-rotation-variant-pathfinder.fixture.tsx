@@ -47,7 +47,7 @@ export default () => {
           const autorouter = new AstarPatternFnPathFinder()
           autorouter.patternFns = [
             // PatternFns.corner45,
-            // PatternFns.doubleBend45,
+            PatternFns.doubleBend45,
             PatternFns.squareCorner45,
             // PatternFns.overshoot45,
             // PatternFns.gapAndCorner45,

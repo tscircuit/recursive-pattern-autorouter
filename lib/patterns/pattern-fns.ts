@@ -1,5 +1,12 @@
 import type { PointWithLayer2 } from "lib/types/SimpleRouteJson"
 
+const addXYFlips = (obj: any) => [
+  { yFlip: 1, xFlip: 1, ...obj },
+  { yFlip: -1, xFlip: 1, ...obj },
+  { yFlip: 1, xFlip: -1, ...obj },
+  { yFlip: -1, xFlip: -1, ...obj },
+]
+
 /**
  * Pattern functions return a list of points from A to B that make
  * up the pattern.
@@ -200,62 +207,34 @@ export const corner45: PatternFnDefinition = {
 export const doubleBend45: PatternFnDefinition = {
   name: "doubleBend45",
   variants: [
-    { dir: 1, bendSizeFraction: 1 / 2 },
-    { dir: -1, bendSizeFraction: 1 / 2 },
-    { dir: 1, bendSizeFraction: 2 / 3 },
-    { dir: -1, bendSizeFraction: 2 / 3 },
-    { dir: 1, bendSizeFraction: 1 / 6 },
-    { dir: -1, bendSizeFraction: 1 / 6 },
+    ...addXYFlips({ bendSizeFraction: 1 / 2 }),
+    ...addXYFlips({ bendSizeFraction: 5 / 6 }),
   ],
-  fn: presortAB((A, B, { dir, bendSizeFraction }) => {
+  fn: presortAB2((A, B, { dir, bendSizeFraction }) => {
     const dx = B.x - A.x
     const dy = B.y - A.y
     const udy = Math.sign(dy)
 
-    const cornerCenterX =
-      dir === 1 ? A.x + dy + (dx - dy) / 2 : A.x + (dx - dy) / 2
+    const cornerCenterX = A.x + dy + (dx - dy) / 2
 
     const plateauLength = bendSizeFraction * dx
 
-    if (dir === 1) {
-      return [
-        A,
-        {
-          x: cornerCenterX - plateauLength / 2,
-          y: B.y + (dx - dy) / 2 - plateauLength / 2,
-          l: 0,
-        },
-        {
-          x: cornerCenterX + plateauLength / 2,
-          y: B.y + (dx - dy) / 2 - plateauLength / 2,
-          l: 0,
-        },
-        B,
-      ]
-    }
     return [
       A,
       {
         x: cornerCenterX - plateauLength / 2,
-        y: A.y - (dx - dy) / 2 + plateauLength / 2,
+        y: B.y + (dx - dy) / 2 - plateauLength / 2,
         l: 0,
       },
       {
         x: cornerCenterX + plateauLength / 2,
-        y: A.y - (dx - dy) / 2 + plateauLength / 2,
+        y: B.y + (dx - dy) / 2 - plateauLength / 2,
         l: 0,
       },
       B,
     ]
   }),
 }
-
-const addXYFlips = (obj: any) => [
-  { yFlip: 1, xFlip: 1, ...obj },
-  { yFlip: -1, xFlip: 1, ...obj },
-  { yFlip: 1, xFlip: -1, ...obj },
-  { yFlip: -1, xFlip: -1, ...obj },
-]
 
 export const squareCorner45: PatternFnDefinition = {
   name: "squareCorner45",
