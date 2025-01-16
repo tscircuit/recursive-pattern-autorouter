@@ -41,6 +41,7 @@ export default () => {
       <InteractiveAutorouter
         defaultSimpleRouteJson={initialSimpleRouteJson}
         defaultMaxSteps={100}
+        showAvailablePatterns={false}
         // enabledPatternNames={[selectedPattern]}
         doAutorouting={(srj, maxSteps) => {
           const autorouter = new AstarPatternFnPathFinder()

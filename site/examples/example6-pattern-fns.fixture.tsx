@@ -14,8 +14,8 @@ const simpleRouteJson: SimpleRouteJson = {
     {
       name: "main_connection",
       pointsToConnect: [
-        { x: -3, y: -1.5, layer: "top" },
-        { x: 3, y: 1.5, layer: "top" },
+        { x: -2, y: -0.5, layer: "top" },
+        { x: 2, y: 0.5, layer: "top" },
       ],
     },
   ],
@@ -34,8 +34,7 @@ const availablePatterns = Object.keys(PatternFns).filter(
 )
 
 export default () => {
-  const [selectedPattern, setSelectedPattern] =
-    useState<string>("squareCorner45")
+  const [selectedPattern, setSelectedPattern] = useState<string>("doubleBend45")
 
   return (
     <div>
@@ -54,6 +53,7 @@ export default () => {
         defaultSimpleRouteJson={simpleRouteJson}
         svgOnly
         enabledPatternNames={[selectedPattern]}
+        showAvailablePatterns={false}
         exploredPatternColor="rgba(0,255,0,1)"
         doAutorouting={(srj, maxSteps) => {
           const [A, B] = srj.connections[0].pointsToConnect as any

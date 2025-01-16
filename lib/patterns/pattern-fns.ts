@@ -75,9 +75,36 @@ const presortAB2 = (fn: PatternFn) => {
   }
 
   return (A: PointWithLayer2, B: PointWithLayer2, variant?: any) => {
-    const result = NormalizeALowerLeftBTopRight(B, A, variant)
+    let result: any[] | null = null
+    console.log(variant)
+    if (variant?.xFlip === 1) {
+      result = NormalizeALowerLeftBTopRight(B, A, variant)
+    } else if (variant?.xFlip === -1) {
+      result = NormalizeALowerLeftBTopRight(
+        {
+          x: A.y,
+          y: A.x,
+          l: A.l,
+        },
+        {
+          x: B.y,
+          y: B.x,
+          l: B.l,
+        },
+        variant,
+      )
+      if (!result) return null
 
-    if (variant?.dir === -1) {
+      result = result.map((p) => ({
+        x: p.y,
+        y: p.x,
+        l: p.l,
+      }))
+    }
+
+    if (!result) return null
+
+    if (variant?.yFlip === -1) {
       return result?.map((p) => ({
         x: A.x - (p.x - B.x),
         y: A.y - (p.y - B.y),
@@ -223,17 +250,18 @@ export const doubleBend45: PatternFnDefinition = {
   }),
 }
 
+const addXYFlips = (obj: any) => [
+  { yFlip: 1, xFlip: 1, ...obj },
+  { yFlip: -1, xFlip: 1, ...obj },
+  { yFlip: 1, xFlip: -1, ...obj },
+  { yFlip: -1, xFlip: -1, ...obj },
+]
+
 export const squareCorner45: PatternFnDefinition = {
   name: "squareCorner45",
   variants: [
-    { dir: 1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
-    { dir: -1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
-    // { dir: 1, heightFraction: 1 / 4, cornerFraction: 1 / 4 },
-    // { dir: -1, heightFraction: 1 / 4, cornerFraction: 1 / 4 },
-    // { dir: 1, heightFraction: 1 / 2, cornerFraction: 1 / 2 },
-    // { dir: -1, heightFraction: 1 / 2, cornerFraction: 1 / 2 },
-    // { dir: 1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
-    // { dir: -1, heightFraction: 3 / 4, cornerFraction: 1 / 2 },
+    ...addXYFlips({ heightFraction: 3 / 4, cornerFraction: 1 / 2 }),
+    ...addXYFlips({ heightFraction: 1 / 2, cornerFraction: 2 / 3 }),
   ],
   fn: presortAB2((A, B, { dir, heightFraction, cornerFraction }) => {
     const dx = B.x - A.x
