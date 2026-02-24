@@ -7,7 +7,7 @@ export default () => {
         <h2 className="text-2xl font-bold">
           The Recursive Pattern Path Finder
         </h2>
-        <a href="https://github.com/tscircuit/recursive-pattern-autorouter">
+        <a href="https://github.com/tscircuit/recursive-pattern-autorouter" target="_blank" rel="noopener">
           <img
             src="https://img.shields.io/github/stars/tscircuit/recursive-pattern-autorouter"
             alt="GitHub stars"
@@ -39,6 +39,8 @@ export default () => {
           <a
             className="text-blue-500"
             href="https://blog.autorouting.com/p/the-recursive-pattern-pathfinder"
+            target="_blank"
+            rel="noopener"
           >
             read this blog post
           </a>{" "}
