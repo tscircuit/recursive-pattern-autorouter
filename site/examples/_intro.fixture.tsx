@@ -9,7 +9,7 @@ export default () => {
         </h2>
         <a href="https://github.com/tscircuit/recursive-pattern-autorouter">
           <img
-            src="https://img.shields.io/github/stars/tscircuit/recursive-pattern-autorouter?style=social"
+            src="https://img.shields.io/github/stars/tscircuit/recursive-pattern-autorouter"
             alt="GitHub stars"
           />
         </a>
