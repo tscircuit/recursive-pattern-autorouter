@@ -43,15 +43,15 @@ export const InteractiveSimpleRouteJson = ({
 
   // Create transform matrices
   const toSvgSpace = compose(
-    translate(padding, padding),
-    scale(scale_factor, scale_factor),
+    translate(padding, svgHeight - padding),
+    scale(scale_factor, -scale_factor),
     translate(-simpleRouteJson.bounds.minX, -simpleRouteJson.bounds.minY),
   )
 
   const toPcbSpace = compose(
     translate(simpleRouteJson.bounds.minX, simpleRouteJson.bounds.minY),
-    scale(1 / scale_factor, 1 / scale_factor),
-    translate(-padding, -padding),
+    scale(1 / scale_factor, -1 / scale_factor),
+    translate(-padding, -svgHeight + padding),
   )
 
   // Transform helpers
@@ -185,7 +185,7 @@ export const InteractiveSimpleRouteJson = ({
         if (obstacle.type === "rect") {
           const topLeft = transformPoint({
             x: obstacle.center.x - obstacle.width / 2,
-            y: obstacle.center.y - obstacle.height / 2,
+            y: obstacle.center.y + obstacle.height / 2,
           })
           return (
             <rect
