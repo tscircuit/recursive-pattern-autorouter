@@ -1,30 +1,32 @@
 import type { PointWithLayer, PointWithLayer2 } from "lib/types/SimpleRouteJson"
 import type { ProcessedObstacle } from "./preprocessObstacles"
 
+export interface IntersectionObstacleInfo {
+  width: number
+  height: number
+  maxDimension: number
+  perpendicularExtent: number
+  obstacle: ProcessedObstacle
+}
+
 /**
- * Check if line segment AB intersects any applicable obstacles
- * @param {{x: number, y: number}} A Start point
- * @param {{x: number, y: number}} B End point
- * @param {Array<Object>} obstacles Preprocessed obstacles
- * @param {Array<boolean>} mask Indicates which obstacles are applicable
- * @returns {boolean} True if there's an intersection
+ * Compute the first applicable obstacle intersected by line segment AB and return its size info
  */
-export const doesIntersect = (
+export const getIntersectionObstacleSize = (
   A: PointWithLayer2,
   B: PointWithLayer2,
   obstacles: ProcessedObstacle[],
   mask: boolean[],
-) => {
-  // Line segment parameters
+): IntersectionObstacleInfo | null => {
   const dx = B.x - A.x
   const dy = B.y - A.y
+  const segmentLength = Math.sqrt(dx * dx + dy * dy)
 
   for (let i = 0; i < obstacles.length; i++) {
     if (!mask[i]) continue
 
     const obs = obstacles[i]
 
-    // Quick AABB test
     const minX = Math.min(A.x, B.x)
     const maxX = Math.max(A.x, B.x)
     const minY = Math.min(A.y, B.y)
@@ -39,41 +41,41 @@ export const doesIntersect = (
       continue
     }
 
-    // Check intersection using Separating Axis Theorem (SAT)
+    if (segmentLength === 0) {
+      return {
+        width: obs.width,
+        height: obs.height,
+        maxDimension: Math.max(obs.width, obs.height),
+        perpendicularExtent: Math.max(obs.halfWidth, obs.halfHeight),
+        obstacle: obs,
+      }
+    }
 
-    // Get the line segment vector and normalize it
-    const segmentLength = Math.sqrt(dx * dx + dy * dy)
     const normalizedDx = dx / segmentLength
     const normalizedDy = dy / segmentLength
 
-    // Calculate perpendicular vector to line segment
     const perpDx = -normalizedDy
     const perpDy = normalizedDx
 
-    // Project rectangle corners onto perpendicular axis
     const rectHalfWidth = obs.halfWidth
     const rectHalfHeight = obs.halfHeight
     const rectProjection =
       Math.abs(rectHalfWidth * perpDx) + Math.abs(rectHalfHeight * perpDy)
 
-    // Project vector from line start to rectangle center onto perpendicular axis
     const centerVecX = obs.center.x - A.x
     const centerVecY = obs.center.y - A.y
     const centerProjection = Math.abs(centerVecX * perpDx + centerVecY * perpDy)
 
-    // If projections don't overlap, there's no intersection
     if (centerProjection > rectProjection) {
       continue
     }
 
-    // Project rectangle onto line segment axis
     const rectProjectionOnLine =
       Math.abs(rectHalfWidth * normalizedDx) +
       Math.abs(rectHalfHeight * normalizedDy)
     const centerProjectionOnLine =
       centerVecX * normalizedDx + centerVecY * normalizedDy
 
-    // Check if line segment overlaps with rectangle projection
     if (
       centerProjectionOnLine + rectProjectionOnLine < 0 ||
       centerProjectionOnLine - rectProjectionOnLine > segmentLength
@@ -81,8 +83,51 @@ export const doesIntersect = (
       continue
     }
 
-    return true
+    const requiredClearance = rectProjection - centerProjection
+    return {
+      width: obs.width,
+      height: obs.height,
+      maxDimension: Math.max(obs.width, obs.height),
+      perpendicularExtent: Math.max(
+        requiredClearance,
+        Math.min(obs.halfWidth, obs.halfHeight),
+      ),
+      obstacle: obs,
+    }
   }
 
-  return false
+  return null
+}
+
+/**
+ * Filter helper to check whether a pattern's lateral excursion can overcome an intersected obstacle
+ */
+export const canPatternOvercomeObstacle = (
+  pattern: Array<{ x: number; y: number; l: number }>,
+  segmentLength: number,
+  intersection: IntersectionObstacleInfo | null,
+): boolean => {
+  if (!intersection) return true
+  const maxPatternOffset = pattern.reduce(
+    (maxY, pt) => Math.max(maxY, Math.abs(pt.y) * segmentLength),
+    0,
+  )
+  return maxPatternOffset >= intersection.perpendicularExtent
+}
+
+/**
+ * Check if line segment AB intersects any applicable obstacles
+ * @param {{x: number, y: number}} A Start point
+ * @param {{x: number, y: number}} B End point
+ * @param {Array<Object>} obstacles Preprocessed obstacles
+ * @param {Array<boolean>} mask Indicates which obstacles are applicable
+ * @returns {boolean} True if there's an intersection
+ */
+export const doesIntersect = (
+  A: PointWithLayer2,
+  B: PointWithLayer2,
+  obstacles: ProcessedObstacle[],
+  mask: boolean[],
+) => {
+  return getIntersectionObstacleSize(A, B, obstacles, mask) !== null
 }

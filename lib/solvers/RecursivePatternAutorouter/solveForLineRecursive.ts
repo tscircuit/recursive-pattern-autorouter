@@ -2,7 +2,12 @@ import type { PointWithLayer, PointWithLayer2 } from "lib/types/SimpleRouteJson"
 import type { ProcessedObstacle } from "lib/algos/preprocessObstacles"
 import type { PatternDefinition } from "lib/patterns"
 import type { Trace } from "lib/types/SimpleRouteJson"
-import { doesIntersect } from "lib/algos/doesIntersect"
+import {
+  canPatternOvercomeObstacle,
+  doesIntersect,
+  getIntersectionObstacleSize,
+} from "lib/algos/doesIntersect"
+import { getScaleVariantPatterns } from "lib/patterns/scale-variant-patterns"
 
 type Line = Array<PointWithLayer2>
 
@@ -13,9 +18,17 @@ export const solveForLineRecursive = (
     processedObstacles: ProcessedObstacle[]
     obstacleMask: boolean[]
     patterns: PatternDefinition[]
+    filterByObstacleSize?: boolean
+    useScaleVariantPatterns?: boolean
   },
 ): Line | null => {
-  if (!doesIntersect(A, B, ctx.processedObstacles, ctx.obstacleMask)) {
+  const intersectionInfo = getIntersectionObstacleSize(
+    A,
+    B,
+    ctx.processedObstacles,
+    ctx.obstacleMask,
+  )
+  if (!intersectionInfo) {
     return [A, B]
   }
 
@@ -23,7 +36,18 @@ export const solveForLineRecursive = (
   const unitVec = { x: (B.x - A.x) / dist, y: (B.y - A.y) / dist }
   const orthoVec = { x: -unitVec.y, y: unitVec.x }
 
-  for (const pattern of ctx.patterns) {
+  const candidatePatterns = ctx.useScaleVariantPatterns
+    ? getScaleVariantPatterns(dist)
+    : ctx.patterns
+
+  for (const pattern of candidatePatterns) {
+    if (
+      ctx.filterByObstacleSize &&
+      !canPatternOvercomeObstacle(pattern, dist, intersectionInfo)
+    ) {
+      continue
+    }
+
     const segmentPoints = pattern.map((pat) => ({
       x: A.x + (pat.x * unitVec.x + pat.y * orthoVec.x) * dist,
       y: A.y + (pat.x * unitVec.y + pat.y * orthoVec.y) * dist,

@@ -1,12 +1,16 @@
 import {
   getPatternName,
+  getScaleVariantPatterns,
   singleLayerPatternSet,
   type PatternDefinition,
 } from "lib/patterns"
 import { projectPattern } from "lib/patterns/projectPattern"
 import type { PointWithLayer, PointWithLayer2 } from "lib/types/SimpleRouteJson"
-import { hasJSDocParameterTags } from "typescript"
-import { doesIntersect } from "./doesIntersect"
+import {
+  canPatternOvercomeObstacle,
+  doesIntersect,
+  getIntersectionObstacleSize,
+} from "./doesIntersect"
 import type { ProcessedObstacle } from "./preprocessObstacles"
 import { distance } from "./distance"
 
@@ -54,6 +58,9 @@ export class AstarPatternPathFinder {
   processedObstacles: ProcessedObstacle[] = []
   obstacleMask: boolean[] = []
 
+  filterByObstacleSize = false
+  useScaleVariantPatterns = false
+
   solvedPattern: ProjectedPattern | null = null
 
   goalStraightLineDistance: number = 0
@@ -78,7 +85,30 @@ export class AstarPatternPathFinder {
         ...pat.unsolvedSegments.slice(0, parentSegmentIndex),
         ...pat.unsolvedSegments.slice(parentSegmentIndex + 1),
       ]
-      for (const patternDefinition of this.patternDefinitions) {
+      const intersectionInfo = this.filterByObstacleSize
+        ? getIntersectionObstacleSize(
+            anchorSegment.A,
+            anchorSegment.B,
+            this.processedObstacles,
+            this.obstacleMask,
+          )
+        : null
+      const candidatePatternDefs = this.useScaleVariantPatterns
+        ? getScaleVariantPatterns(anchorSegment.distance)
+        : this.patternDefinitions
+
+      for (const patternDefinition of candidatePatternDefs) {
+        if (
+          this.filterByObstacleSize &&
+          !canPatternOvercomeObstacle(
+            patternDefinition,
+            anchorSegment.distance,
+            intersectionInfo,
+          )
+        ) {
+          continue
+        }
+
         const projectedPoints = projectPattern(
           anchorSegment.A,
           anchorSegment.B,

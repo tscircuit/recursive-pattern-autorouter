@@ -29,7 +29,7 @@ export const ultraWideArrow = [
   { x: 1 / 2, y: 1 / 8, l: 0 },
   { x: 1, y: 0, l: 0 },
 ]
-const flippedUltraWideArrow = flip(ultraWideArrow)
+export const flippedUltraWideArrow = flip(ultraWideArrow)
 
 export const asymmetricSharpArrow = [
   { x: 0, y: 0, l: 0 },
@@ -207,3 +207,6 @@ export const singleLayerPatternSet: PatternDefinition[] = [
   // ...doubleBendVariants,
   // ...flippedDoubleBendVariants,
 ]
+
+export * from "./scale-variant-patterns"
+export * from "./pattern-fns"
